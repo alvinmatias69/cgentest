@@ -3,6 +3,7 @@
 
 struct token *new (enum token_type type, char *identifier);
 void add_token(struct token **dst, struct token *src);
+void ignore(FILE *stream, char start, char end);
 
 struct token *tokenize(FILE *stream) {
   // set result to dummy token
@@ -13,6 +14,7 @@ struct token *tokenize(FILE *stream) {
     switch (ch) {
     case '{':
       add_token(&current, new (LEFT_BRACE, NULL));
+      ignore(stream, '{', '}');
       break;
     case '}':
       add_token(&current, new (RIGHT_BRACE, NULL));
@@ -53,4 +55,23 @@ struct token *new (enum token_type type, char *identifier) {
 void add_token(struct token **dst, struct token *src) {
   (*dst)->next = src;
   (*dst) = src;
+}
+
+void ignore(FILE *stream, char start, char end) {
+  int stack_count = 1;
+  char ch;
+
+  while (stack_count > 0) {
+    ch = fgetc(stream);
+    if (ch == EOF)
+      break;
+
+    if (ch == start) {
+      stack_count++;
+    } else if (ch == end) {
+      stack_count--;
+    }
+  }
+
+  ungetc(ch, stream);
 }
