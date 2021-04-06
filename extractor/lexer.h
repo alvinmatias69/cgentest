@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+#define MAXIMUM_IDENT_LENGTH 31
+
 enum token_type {
   LEFT_PAREN = '(',
   RIGHT_PAREN = ')',
@@ -11,7 +13,11 @@ enum token_type {
   COMMA = ',',
   SEMICOLON = ';',
   AMPERSAND = '&',
-  STAR = '*'
+  STAR = '*',
+  TYPE_SPECIFIER,
+  TYPE_QUALIFIER,
+  STORAGE_CLASS_SPECIFIER,
+  IDENTIFIER
 };
 
 struct token {

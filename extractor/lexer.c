@@ -1,9 +1,11 @@
 #include "lexer.h"
+#include <ctype.h>
 #include <stdlib.h>
 
 struct token *new (enum token_type type, char *identifier);
 void add_token(struct token **dst, struct token *src);
 void ignore(FILE *stream, char start, char end);
+int extract_ident(FILE *stream, char **target);
 
 struct token *tokenize(FILE *stream) {
   // set result to dummy token
@@ -31,8 +33,20 @@ struct token *tokenize(FILE *stream) {
     case '*':
       add_token(&current, new (STAR, NULL));
       break;
-    default:
+    case ';':
+      add_token(&current, new (SEMICOLON, NULL));
+      break;
+    case ' ':
+    case '\n':
+    case '\0':
       continue;
+    // TODO: clean this up and add additional token classification
+    default: {
+      ungetc(ch, stream);
+      char *identifier;
+      extract_ident(stream, &identifier);
+      add_token(&current, new (IDENTIFIER, identifier));
+    }
     }
   }
 
@@ -74,4 +88,22 @@ void ignore(FILE *stream, char start, char end) {
   }
 
   ungetc(ch, stream);
+}
+
+int extract_ident(FILE *stream, char **target) {
+  int count = 0;
+  *target = malloc(sizeof(char) * MAXIMUM_IDENT_LENGTH);
+  char ch;
+
+  while ((ch = fgetc(stream)) != EOF) {
+    if (isalnum(ch) == 0 && ch != '_') {
+      ungetc(ch, stream);
+      break;
+    }
+
+    (*target)[count++] = ch;
+  }
+
+  *target = realloc(*target, count);
+  return count;
 }
