@@ -104,6 +104,7 @@ int extract_ident(FILE *stream, char **target) {
     (*target)[count++] = ch;
   }
 
+  (*target)[count++] = '\0';
   *target = realloc(*target, count);
   return count;
 }
