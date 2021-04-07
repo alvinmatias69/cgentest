@@ -23,7 +23,7 @@ void insert(struct trie_node *root, char *key, enum token_type type) {
       return;
 
     if (node->children[ch] == NULL)
-      node->children[ch] = new ();
+      node->children[ch] = new_trie();
 
     node = node->children[ch];
   }

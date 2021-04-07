@@ -1,7 +1,7 @@
 #ifndef TRIE
 #define TRIE
 
-#include "lexer.h"
+#include "token.h"
 #include <stdbool.h>
 
 #define ALPHA_SIZE 26

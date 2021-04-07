@@ -2,51 +2,50 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-struct token *new (enum token_type type, char *identifier);
+struct token *new_token(enum token_type type, char *identifier);
 void add_token(struct token **dst, struct token *src);
 void ignore(FILE *stream, char start, char end);
-int extract_ident(FILE *stream, char **target);
+struct token *extract_ident(FILE *stream, struct trie_node *trie);
 
-struct token *tokenize(FILE *stream) {
+struct token *tokenize(FILE *stream, struct trie_node *trie) {
   // set result to dummy token
-  struct token *result = new (STAR, ""), *current = result;
+  struct token *result = new_token(STAR, ""), *current = result;
   char ch;
 
   while ((ch = fgetc(stream)) != EOF) {
     switch (ch) {
     case '{':
-      add_token(&current, new (LEFT_BRACE, NULL));
+      add_token(&current, new_token(LEFT_BRACE, NULL));
       ignore(stream, '{', '}');
       break;
     case '}':
-      add_token(&current, new (RIGHT_BRACE, NULL));
+      add_token(&current, new_token(RIGHT_BRACE, NULL));
       break;
     case '(':
-      add_token(&current, new (LEFT_PAREN, NULL));
+      add_token(&current, new_token(LEFT_PAREN, NULL));
       break;
     case ')':
-      add_token(&current, new (RIGHT_PAREN, NULL));
+      add_token(&current, new_token(RIGHT_PAREN, NULL));
       break;
     case ',':
-      add_token(&current, new (COMMA, NULL));
+      add_token(&current, new_token(COMMA, NULL));
       break;
     case '*':
-      add_token(&current, new (STAR, NULL));
+      add_token(&current, new_token(STAR, NULL));
       break;
     case ';':
-      add_token(&current, new (SEMICOLON, NULL));
+      add_token(&current, new_token(SEMICOLON, NULL));
       break;
     case ' ':
     case '\n':
     case '\0':
       continue;
-    // TODO: clean this up and add additional token classification
-    default: {
+    default:
       ungetc(ch, stream);
-      char *identifier;
-      extract_ident(stream, &identifier);
-      add_token(&current, new (IDENTIFIER, identifier));
-    }
+      struct token *token = extract_ident(stream, trie);
+      if (token == NULL)
+        continue;
+      add_token(&current, token);
     }
   }
 
@@ -58,7 +57,7 @@ struct token *tokenize(FILE *stream) {
   return result;
 }
 
-struct token *new (enum token_type type, char *identifier) {
+struct token *new_token(enum token_type type, char *identifier) {
   struct token *token = malloc(sizeof(struct token));
   token->type = type;
   token->identifier = identifier;
@@ -90,7 +89,7 @@ void ignore(FILE *stream, char start, char end) {
   ungetc(ch, stream);
 }
 
-int extract_ident(FILE *stream, char **target) {
+int extract_word(FILE *stream, char **target) {
   int count = 0;
   *target = malloc(sizeof(char) * MAXIMUM_IDENT_LENGTH);
   char ch;
@@ -107,4 +106,16 @@ int extract_ident(FILE *stream, char **target) {
   (*target)[count++] = '\0';
   *target = realloc(*target, count);
   return count;
+}
+
+struct token *extract_ident(FILE *stream, struct trie_node *trie) {
+  char *identifier;
+  if (extract_word(stream, &identifier) == 0)
+    return NULL;
+
+  enum token_type type;
+  if (!search(trie, identifier, &type))
+    return new_token(IDENTIFIER, identifier);
+
+  return new_token(type, identifier);
 }
