@@ -16,7 +16,6 @@ struct token *tokenize(FILE *stream, struct trie_node *trie) {
     switch (ch) {
     case '{':
       add_token(&current, new_token(LEFT_BRACE, NULL));
-      ignore(stream, '{', '}');
       break;
     case '}':
       add_token(&current, new_token(RIGHT_BRACE, NULL));
@@ -35,6 +34,18 @@ struct token *tokenize(FILE *stream, struct trie_node *trie) {
       break;
     case ';':
       add_token(&current, new_token(SEMICOLON, NULL));
+      break;
+    case '=':
+      add_token(&current, new_token(EQUAL, NULL));
+      break;
+    case '!':
+      add_token(&current, new_token(EXCLAMATION, NULL));
+      break;
+    case '+':
+      add_token(&current, new_token(PLUS, NULL));
+      break;
+    case '-':
+      add_token(&current, new_token(MINUS, NULL));
       break;
     case ' ':
     case '\n':

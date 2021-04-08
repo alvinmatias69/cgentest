@@ -1,5 +1,5 @@
 #include "util.h"
-#include "lexer.h"
+#include <stdlib.h>
 
 struct trie_node *init_trie() {
   struct trie_node *trie = new_trie();
@@ -27,4 +27,29 @@ struct trie_node *init_trie() {
   insert(trie, "union", STRUCT_OR_UNION);
 
   return trie;
+}
+
+void free_trie(struct trie_node *node) {
+  if (node == NULL)
+    return;
+
+  for (int idx = 0; idx < ALPHA_SIZE; idx++) {
+    free_trie(node->children[idx]);
+  }
+
+  free(node);
+}
+
+void free_token(struct token *node) {
+  if (node == NULL)
+    return;
+
+  free_token(node->next);
+
+  if (node->type == TYPE_SPECIFIER || node->type == TYPE_QUALIFIER ||
+      node->type == STORAGE_CLASS_SPECIFIER || node->type == STRUCT_OR_UNION ||
+      node->type == IDENTIFIER)
+    free(node->identifier);
+
+  free(node);
 }

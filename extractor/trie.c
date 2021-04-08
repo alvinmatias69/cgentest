@@ -14,10 +14,9 @@ struct trie_node *new_trie() {
   return node;
 }
 
-void insert(struct trie_node *root, char *key, enum token_type type) {
+void insert(struct trie_node *node, char *key, enum token_type type) {
   int length = strlen(key);
   char ch;
-  struct trie_node *node = root;
   for (int idx = 0; idx < length; idx++) {
     if ((ch = char_to_index(key[idx])) > ALPHA_SIZE)
       return;
@@ -32,11 +31,9 @@ void insert(struct trie_node *root, char *key, enum token_type type) {
   node->type = type;
 }
 
-bool search(struct trie_node *root, char *key, enum token_type *type) {
-  bool found = false;
+bool search(struct trie_node *node, char *key, enum token_type *type) {
   int length = strlen(key);
   char ch;
-  struct trie_node *node = root;
   for (int idx = 0; idx < length; idx++) {
     if ((ch = char_to_index(key[idx])) > ALPHA_SIZE)
       return false;
