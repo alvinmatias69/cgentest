@@ -7,6 +7,8 @@ void add_token(struct token **dst, struct token *src);
 void ignore(FILE *stream, char start, char end);
 struct token *extract_ident(FILE *stream, struct trie_node *trie);
 
+// tokenize stream input into list of token. Each token type is categorized by
+// token_type. Each list items are dynamically allocated.
 struct token *tokenize(FILE *stream, struct trie_node *trie) {
   // set result to dummy token
   struct token *result = new_token(STAR, ""), *current = result;
@@ -68,6 +70,8 @@ struct token *tokenize(FILE *stream, struct trie_node *trie) {
   return result;
 }
 
+// Create new token based on given parameters. Created token memory is
+// dynamically created, need to be freed after used.
 struct token *new_token(enum token_type type, char *identifier) {
   struct token *token = malloc(sizeof(struct token));
   token->type = type;
@@ -81,6 +85,8 @@ void add_token(struct token **dst, struct token *src) {
   (*dst) = src;
 }
 
+// ignore all char between start and end from input stream. Move read pointer to
+// end char position / EOF.
 void ignore(FILE *stream, char start, char end) {
   int stack_count = 1;
   char ch;
@@ -100,6 +106,9 @@ void ignore(FILE *stream, char start, char end) {
   ungetc(ch, stream);
 }
 
+// iterate over input stream for c identifier [a-zA-Z\_]+. Move the read pointer
+// to the end of the identifier. Set target params with identifier value and
+// return identifier length.
 int extract_word(FILE *stream, char **target) {
   int count = 0;
   *target = malloc(sizeof(char) * MAXIMUM_IDENT_LENGTH);
@@ -119,6 +128,8 @@ int extract_word(FILE *stream, char **target) {
   return count;
 }
 
+// extract identifier from input stream into a token. Need trie struct to
+// determine whether identifier is a keyword.
 struct token *extract_ident(FILE *stream, struct trie_node *trie) {
   char *identifier;
   if (extract_word(stream, &identifier) == 0)
