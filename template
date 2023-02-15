@@ -1,0 +1,37 @@
+{{#function_prototypes}}
+void {{name}}_test() {
+    struct {
+        char name[100];
+        struct {
+            {{#parameters}}
+            {{type}} {{name}};
+            {{/parameters}}
+        } parameters;
+        {{^is_void}}
+        {{type}} expected;
+        {{/is_void}}
+    } tests[] = {
+
+    };
+
+    size_t length = sizeof(tests) / sizeof(tests[0]);
+    for (size_t idx = 0; idx < length; idx++) {
+        printf("Running {{name}}_test: %s\n", tests[idx].name);
+        {{#is_void}}
+        // TODO: add check for side effect
+        {{name}}({{#parameters}}tests[idx].parameters.{{name}}{{^is_last}}, {{/is_last}}{{/parameters}});
+        {{/is_void}}
+        {{^is_void}}
+        {{^is_primitive}}
+        // TODO: use proper compare function
+        {{/is_primitive}}
+        if (tests[idx].expected == {{name}}({{#parameters}}tests[idx].parameters.{{name}}{{^is_last}}, {{/is_last}}{{/parameters}})) {
+            printf("\t=== Success ===\n");
+        } else {
+            printf("\t=== Failure ===\n");
+        }
+        {{/is_void}}
+    }
+}
+
+{{/function_prototypes}}
