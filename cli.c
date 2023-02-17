@@ -15,6 +15,7 @@ struct arguments parse_args(int argc, char *argv[]) {
   int opt = -1;
   struct arguments args = {
       .custom_target = false,
+      .ignore_target_current = false,
       .input = "",
       .target = "",
       .filter = "",
@@ -22,7 +23,7 @@ struct arguments parse_args(int argc, char *argv[]) {
   };
   struct required_args req = {0};
 
-  while ((opt = getopt(argc, argv, "hi:o:l:f:")) != -1) {
+  while ((opt = getopt(argc, argv, "hi:o:l:f:F")) != -1) {
     switch (opt) {
     case 'i':
       args.input = strndup(optarg, 100);
@@ -37,6 +38,9 @@ struct arguments parse_args(int argc, char *argv[]) {
       break;
     case 'f':
       args.filter = strndup(optarg, 100);
+      break;
+    case 'F':
+      args.ignore_target_current = true;
       break;
     case 'h':
       print_help();

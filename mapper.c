@@ -109,9 +109,10 @@ void parse_parameters(const char *parameters,
     }
 
     char *name = malloc(sizeof(char *) * (token_length - whitespace_loc));
-    char *type = malloc(sizeof(char *) * whitespace_loc);
+    char *type = malloc(sizeof(char *) * (whitespace_loc + 1));
     strncpy(name, token + whitespace_loc + 1, token_length - whitespace_loc);
-    strncat(type, token, whitespace_loc);
+    strncpy(type, token, whitespace_loc);
+    type[whitespace_loc] = '\0';
     struct function_parameter parameter = {.name = name, .type = type};
     result[idx++] = parameter;
     token = strtok(NULL, delimiter);

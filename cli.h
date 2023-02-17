@@ -9,6 +9,7 @@ struct arguments {
   char *target;
   char *filter;
   bool custom_target;
+  bool ignore_target_current;
   enum log_level log_level;
 };
 

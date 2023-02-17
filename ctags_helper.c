@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void generate_tags(char *source, char *target, tagFile **tags) {
+void generate_tags(const char *source, const char *target, tagFile **tags) {
   char command[100];
   snprintf(command, sizeof command,
            "ctags --kinds-c=f --_xformat=\"%%N %%t %%S\" -o %s %s", target,
