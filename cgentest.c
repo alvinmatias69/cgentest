@@ -9,8 +9,6 @@
 #include <time.h>
 #include <unistd.h>
 
-size_t map_tags_to_proto(tagFile *tags, const char *query,
-                         struct function_prototype **protos, bool name_only);
 char *generate_target_file(struct arguments *args);
 void add_header_to_target(char *input, char *target);
 size_t generate_proto(const char *source, struct function_prototype **protos,
@@ -105,35 +103,6 @@ size_t generate_proto(const char *source, struct function_prototype **protos,
       max += FUNCTION_PROTO_BOUND;
       *protos = realloc(*protos, sizeof(struct function_prototype) * max);
     }
-    (*protos)[count++] = map_proto(&entry, name_only);
-    result = (*next)(tags, &entry);
-  }
-
-  tagsClose(tags);
-  return count;
-}
-
-size_t map_tags_to_proto(tagFile *tags, const char *query,
-                         struct function_prototype **protos, bool name_only) {
-  size_t count = 0;
-  tagEntry entry;
-  tagResult (*next)(tagFile *const, tagEntry *const);
-  tagResult result;
-
-  if (strnlen(query, 100) > 0) {
-    next = tagsFindNext;
-    result = tagsFind(tags, &entry, query, TAG_PARTIALMATCH | TAG_OBSERVECASE);
-  } else {
-    next = tagsNext;
-    result = tagsFirst(tags, &entry);
-  }
-
-  if (result != TagSuccess) {
-    tagsClose(tags);
-    return count;
-  }
-
-  while (result == TagSuccess) {
     (*protos)[count++] = map_proto(&entry, name_only);
     result = (*next)(tags, &entry);
   }

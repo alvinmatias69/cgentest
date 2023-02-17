@@ -64,6 +64,7 @@ void print_args(struct arguments *args) {
   printf("log level: %d\n", args->log_level);
 }
 
+// TODO: implement help print
 void print_help() { printf("USAGE\n"); }
 
 void validate_args(struct required_args *req, struct arguments *args) {
