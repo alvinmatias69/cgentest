@@ -1,4 +1,5 @@
 {{#function_prototypes}}
+
 void {{name}}_test() {
     struct {
         char name[100];
@@ -33,5 +34,4 @@ void {{name}}_test() {
         {{/is_void}}
     }
 }
-
 {{/function_prototypes}}

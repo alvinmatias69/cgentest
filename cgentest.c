@@ -51,8 +51,9 @@ void generate_test(struct arguments *args) {
   /*   print_proto(&protos[idx]); */
   /* } */
 
-  cJSON *root = map_json(&protos, protos_count);
-  log_debugf("json result: %s\n", cJSON_Print(root));
+  cJSON *root = map_json(&protos, protos_count, &generated_protos,
+                         generated_protos_count);
+  /* log_debugf("json result: %s\n", cJSON_Print(root)); */
 
   FILE *target = fopen(target_file_name, "a");
   char *template = read_file("template");
@@ -165,7 +166,7 @@ char *generate_target_file(struct arguments *args) {
 
   size_t pos = 0;
   size_t input_name_length = strnlen(args->input, MAX_FILENAME_LENGTH);
-  for (size_t idx; idx < input_name_length; idx++) {
+  for (size_t idx = 0; idx < input_name_length; idx++) {
     if (args->input[idx] == '.')
       pos = idx;
   }

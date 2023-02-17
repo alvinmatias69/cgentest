@@ -1,4 +1,5 @@
 #include "mapper.h"
+#include "local_limit.h"
 #include "logger.h"
 #include <stdio.h>
 #include <string.h>
@@ -11,6 +12,8 @@
 void parse_return_type(const char *typeref, struct function_prototype *proto);
 void parse_parameters(const char *parameters, struct function_prototype *proto);
 void print_proto(struct function_prototype *proto);
+bool find_function_name(const char *name, struct function_prototype **protos,
+                        size_t proto_count);
 
 struct function_prototype map_proto(tagEntry *entry, bool name_only) {
   struct function_prototype proto = {
@@ -123,12 +126,20 @@ void parse_parameters(const char *parameters,
   free(raw);
 }
 
-cJSON *map_json(struct function_prototype **protos, size_t count) {
+cJSON *map_json(struct function_prototype **protos, size_t count,
+                struct function_prototype **filter_out,
+                size_t filter_out_count) {
   cJSON *root = cJSON_CreateObject();
   cJSON *protos_json = cJSON_CreateArray();
   cJSON_AddItemToObject(root, "function_prototypes", protos_json);
 
   for (size_t idx = 0; idx < count; idx++) {
+    if (find_function_name((*protos)[idx].name, filter_out, filter_out_count)) {
+      log_warnf("test for function %s is already available. Skipping..\n",
+                (*protos)[idx].name);
+      continue;
+    }
+
     cJSON *proto_json = cJSON_CreateObject();
     cJSON_AddItemToArray(protos_json, proto_json);
     cJSON_AddItemToObject(proto_json, "name",
@@ -160,4 +171,23 @@ cJSON *map_json(struct function_prototype **protos, size_t count) {
   }
 
   return root;
+}
+
+bool find_function_name(const char *name, struct function_prototype **protos,
+                        size_t proto_count) {
+  if (proto_count == 0)
+    return false;
+  char *test_name = malloc(sizeof(char *) * MAX_FUNCTION_NAME_LENGTH);
+  snprintf(test_name, MAX_FUNCTION_NAME_LENGTH, "%s_test", name);
+
+  for (size_t idx = 0; idx < proto_count; idx++) {
+    if (strncmp(test_name, (*protos)[idx].name, MAX_FUNCTION_NAME_LENGTH) ==
+        0) {
+      free(test_name);
+      return true;
+    }
+  }
+
+  free(test_name);
+  return false;
 }

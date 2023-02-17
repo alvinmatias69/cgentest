@@ -13,8 +13,8 @@ cli.o: cli.h cli.c
 logger.o: logger.h logger.c
 	@gcc -o logger.o -c logger.c
 
-cgentest.o: cgentest.h cgentest_new.c
-	@gcc -o cgentest.o -c cgentest_new.c
+cgentest.o: cgentest.h cgentest.c
+	@gcc -o cgentest.o -c cgentest.c
 
 ctags_helper.o: ctags_helper.h ctags_helper.c
 	@gcc -o ctags_helper.o -c ctags_helper.c
