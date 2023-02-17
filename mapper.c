@@ -1,6 +1,7 @@
 #include "mapper.h"
 #include "local_limit.h"
 #include "logger.h"
+#include "util.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -17,7 +18,7 @@ bool find_function_name(const char *name, struct function_prototype **protos,
 
 struct function_prototype map_proto(tagEntry *entry, bool name_only) {
   struct function_prototype proto = {
-      .name = strndup(entry->name, 100),
+      .name = strndup(entry->name, MAX_FUNCTION_NAME_LENGTH),
   };
 
   if (name_only) {
@@ -25,10 +26,11 @@ struct function_prototype map_proto(tagEntry *entry, bool name_only) {
   }
 
   for (unsigned short idx = 0; idx < entry->fields.count; idx++) {
-    if (strncmp(entry->fields.list[idx].key, RETURN_INDICATOR, 10) == 0) {
+    if (strncmp(entry->fields.list[idx].key, RETURN_INDICATOR,
+                MAX_TOKEN_LENGTH) == 0) {
       parse_return_type(entry->fields.list[idx].value, &proto);
-    } else if (strncmp(entry->fields.list[idx].key, PARAMETER_INDICATOR, 10) ==
-               0) {
+    } else if (strncmp(entry->fields.list[idx].key, PARAMETER_INDICATOR,
+                       MAX_TOKEN_LENGTH) == 0) {
       parse_parameters(entry->fields.list[idx].value, &proto);
     }
   }
@@ -37,7 +39,7 @@ struct function_prototype map_proto(tagEntry *entry, bool name_only) {
 }
 
 void print_proto(struct function_prototype *proto) {
-  log_debugf("function prototype\n");
+  log_debug("function prototype\n");
   log_debugf("name: %s\n", proto->name);
   log_debugf("return is primitive: %d\n", proto->return_type.is_primitive);
   log_debugf("function is void: %d\n", proto->return_type.is_void);
@@ -47,7 +49,7 @@ void print_proto(struct function_prototype *proto) {
     log_debugf("\tname: %s\n", proto->parameters[idx].name);
     log_debugf("\ttype: %s\n", proto->parameters[idx].type);
   }
-  log_debugf("\n");
+  log_debug("\n");
 }
 
 void free_proto(struct function_prototype *proto) {
@@ -61,23 +63,33 @@ void free_proto(struct function_prototype *proto) {
 }
 
 void parse_return_type(const char *typeref, struct function_prototype *proto) {
-  const char *delimiter = ":";
-  char *token = strtok(typeref, delimiter);
-  bool is_primitive = (strncmp(token, PRIMITIVE_INDICATOR, 100) == 0);
-  char *modifier = strndup(token, 100);
+  size_t typeref_length = strnlen(typeref, MAX_FUNCTION_TYPE_LENGTH);
+  size_t pos = 0;
+  for (size_t idx = 0; idx < typeref_length; idx++) {
+    if (typeref[idx] == ':')
+      pos = idx;
+  }
 
-  token = strtok(NULL, delimiter);
-  bool is_void = (strncmp(token, VOID_INDICATOR, 100) == 0);
-  char result[100];
-  if (is_primitive) {
-    snprintf(result, 100, "%s", token);
-  } else {
-    snprintf(result, 100, "%s %s", modifier, token);
+  char *modifier = malloc(sizeof(char *) * MAX_TOKEN_LENGTH);
+  check_malloc(modifier);
+  char *name = malloc(sizeof(char *) * MAX_TOKEN_LENGTH);
+  check_malloc(name);
+
+  modifier = strndup(typeref, pos);
+  bool is_primitive =
+      strncmp(modifier, PRIMITIVE_INDICATOR, MAX_TOKEN_LENGTH) == 0;
+
+  name = strndup(typeref + pos + 1, typeref_length);
+  bool is_void = strncmp(name, VOID_INDICATOR, MAX_TOKEN_LENGTH) == 0;
+
+  if (!is_primitive) {
+    snprintf(name, MAX_TOKEN_LENGTH, "%s %s", modifier, name);
   }
 
   proto->return_type.is_primitive = is_primitive;
   proto->return_type.is_void = is_void;
-  proto->return_type.name = strndup(result, 100);
+  proto->return_type.name = name;
+
   free(modifier);
 }
 
@@ -85,6 +97,7 @@ void parse_parameters(const char *parameters,
                       struct function_prototype *proto) {
   size_t sign_length = strnlen(parameters, 100);
   char *raw = malloc(sign_length);
+  check_malloc(raw);
 
   // substring of parameters, removing parenthesis
   int count = 0; // count is the number of parameters
@@ -99,12 +112,13 @@ void parse_parameters(const char *parameters,
   const char *delimiter = ",";
   struct function_parameter *result =
       malloc(sizeof(struct function_parameter) * count);
+  check_malloc(result);
   size_t idx = 0;
   char *token = strtok(raw, delimiter);
   size_t token_length;
   size_t whitespace_loc;
   while (token) {
-    token_length = strnlen(token, 100);
+    token_length = strnlen(token, MAX_TOKEN_LENGTH);
     for (size_t token_idx = 0; token_idx < token_length; token_idx++) {
       if (token[token_idx] == ' ') {
         whitespace_loc = token_idx;
@@ -112,7 +126,9 @@ void parse_parameters(const char *parameters,
     }
 
     char *name = malloc(sizeof(char *) * (token_length - whitespace_loc));
+    check_malloc(name);
     char *type = malloc(sizeof(char *) * (whitespace_loc + 1));
+    check_malloc(type);
     strncpy(name, token + whitespace_loc + 1, token_length - whitespace_loc);
     strncpy(type, token, whitespace_loc);
     type[whitespace_loc] = '\0';
@@ -178,6 +194,7 @@ bool find_function_name(const char *name, struct function_prototype **protos,
   if (proto_count == 0)
     return false;
   char *test_name = malloc(sizeof(char *) * MAX_FUNCTION_NAME_LENGTH);
+  check_malloc(test_name);
   snprintf(test_name, MAX_FUNCTION_NAME_LENGTH, "%s_test", name);
 
   for (size_t idx = 0; idx < proto_count; idx++) {

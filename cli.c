@@ -1,4 +1,5 @@
 #include "cli.h"
+#include "local_limit.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,18 +27,18 @@ struct arguments parse_args(int argc, char *argv[]) {
   while ((opt = getopt(argc, argv, "hi:o:l:f:F")) != -1) {
     switch (opt) {
     case 'i':
-      args.input = strndup(optarg, 100);
+      args.input = strndup(optarg, MAX_INPUT_LENGTH);
       req.input = true;
       break;
     case 'o':
-      args.target = strndup(optarg, 100);
+      args.target = strndup(optarg, MAX_INPUT_LENGTH);
       args.custom_target = true;
       break;
     case 'l':
       args.log_level = map_from_string(optarg);
       break;
     case 'f':
-      args.filter = strndup(optarg, 100);
+      args.filter = strndup(optarg, MAX_INPUT_LENGTH);
       break;
     case 'F':
       args.ignore_target_current = true;

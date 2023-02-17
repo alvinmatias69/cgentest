@@ -3,6 +3,7 @@
 #include "libs/mustach/mustach-cjson.h"
 #include "local_limit.h"
 #include "mapper.h"
+#include "util.h"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -10,7 +11,6 @@
 
 size_t map_tags_to_proto(tagFile *tags, const char *query,
                          struct function_prototype **protos, bool name_only);
-char *read_file(char *path);
 char *generate_target_file(struct arguments *args);
 void add_header_to_target(char *input, char *target);
 size_t generate_proto(const char *source, struct function_prototype **protos,
@@ -30,6 +30,8 @@ void generate_test(struct arguments *args) {
   if (access(target_file_name, F_OK) == 0 && !args->ignore_target_current) {
     generated_protos =
         malloc(sizeof(struct function_prototype) * FUNCTION_PROTO_BOUND);
+    check_malloc(generated_protos);
+
     generated_protos_count =
         generate_proto(target_file_name, &generated_protos, "", true);
   }
@@ -38,6 +40,7 @@ void generate_test(struct arguments *args) {
 
   struct function_prototype *protos =
       malloc(sizeof(struct function_prototype) * FUNCTION_PROTO_BOUND);
+  check_malloc(protos);
   size_t protos_count =
       generate_proto(args->input, &protos, args->filter, false);
 
@@ -47,13 +50,8 @@ void generate_test(struct arguments *args) {
     exit(0);
   }
 
-  /* for (size_t idx = 0; idx < protos_count; idx++) { */
-  /*   print_proto(&protos[idx]); */
-  /* } */
-
   cJSON *root = map_json(&protos, protos_count, &generated_protos,
                          generated_protos_count);
-  /* log_debugf("json result: %s\n", cJSON_Print(root)); */
 
   FILE *target = fopen(target_file_name, "a");
   char *template = read_file("template");
@@ -72,6 +70,7 @@ void generate_test(struct arguments *args) {
 size_t generate_proto(const char *source, struct function_prototype **protos,
                       const char *query, bool name_only) {
   char *tag_name = malloc(sizeof(char *) * MAX_FILENAME_LENGTH);
+  check_malloc(tag_name);
   snprintf(tag_name, MAX_FILENAME_LENGTH, "tags%lu", time(NULL));
   log_debugf("tag file: %s\n", tag_name);
 
@@ -143,22 +142,6 @@ size_t map_tags_to_proto(tagFile *tags, const char *query,
   return count;
 }
 
-char *read_file(char *path) {
-  FILE *f = fopen(path, "r");
-
-  fseek(f, 0, SEEK_END);
-  long filesize = ftell(f);
-  fseek(f, 0, SEEK_SET);
-
-  char *data = malloc(filesize + 1);
-  fread(data, filesize, 1, f);
-  fclose(f);
-
-  data[filesize] = '\0';
-
-  return data;
-}
-
 char *generate_target_file(struct arguments *args) {
   if (args->custom_target) {
     return args->target;
@@ -175,6 +158,7 @@ char *generate_target_file(struct arguments *args) {
   char *extension = strndup(args->input + pos, input_name_length);
 
   char *target = malloc(sizeof(char *) * MAX_FILENAME_LENGTH);
+  check_malloc(target);
   snprintf(target, MAX_FILENAME_LENGTH, "%s_test%s", input_name, extension);
   return target;
 }
@@ -186,6 +170,7 @@ void add_header_to_target(char *input, char *target) {
   }
 
   char *include_header = malloc(sizeof(char *) * MAX_INCLUDE_LENGTH);
+  check_malloc(include_header);
   snprintf(include_header, MAX_INCLUDE_LENGTH, "#include \"%s\"\n", input);
 
   FILE *f = fopen(target, "w");
