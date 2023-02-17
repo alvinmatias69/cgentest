@@ -54,12 +54,18 @@ void print_proto(struct function_prototype *proto) {
 
 void free_proto(struct function_prototype *proto) {
   free(proto->name);
-  free(proto->return_type.name);
+
+  if (proto->return_type.name != NULL &&
+      strnlen(proto->return_type.name, MAX_FUNCTION_NAME_LENGTH) > 0)
+    free(proto->return_type.name);
+
   for (size_t idx = 0; idx < proto->parameter_count; idx++) {
     free(proto->parameters[idx].name);
     free(proto->parameters[idx].type);
   }
-  free(proto->parameters);
+
+  if (proto->parameter_count > 0)
+    free(proto->parameters);
 }
 
 void parse_return_type(const char *typeref, struct function_prototype *proto) {
@@ -70,33 +76,31 @@ void parse_return_type(const char *typeref, struct function_prototype *proto) {
       pos = idx;
   }
 
-  char *modifier = malloc(sizeof(char *) * MAX_TOKEN_LENGTH);
-  check_malloc(modifier);
-  char *name = malloc(sizeof(char *) * MAX_TOKEN_LENGTH);
-  check_malloc(name);
-
-  modifier = strndup(typeref, pos);
-  bool is_primitive =
+  char *modifier = strndup(typeref, pos);
+  proto->return_type.is_primitive =
       strncmp(modifier, PRIMITIVE_INDICATOR, MAX_TOKEN_LENGTH) == 0;
 
-  name = strndup(typeref + pos + 1, typeref_length);
-  bool is_void = strncmp(name, VOID_INDICATOR, MAX_TOKEN_LENGTH) == 0;
+  char *name = strndup(typeref + pos + 1, typeref_length);
+  proto->return_type.is_void =
+      strncmp(name, VOID_INDICATOR, MAX_TOKEN_LENGTH) == 0;
 
-  if (!is_primitive) {
-    snprintf(name, MAX_TOKEN_LENGTH, "%s %s", modifier, name);
+  if (proto->return_type.is_primitive) {
+    free(modifier);
+    proto->return_type.name = name;
+    return;
   }
 
-  proto->return_type.is_primitive = is_primitive;
-  proto->return_type.is_void = is_void;
-  proto->return_type.name = name;
-
+  char *tmp_name = malloc(sizeof(char *) * MAX_TOKEN_LENGTH);
+  snprintf(tmp_name, MAX_TOKEN_LENGTH, "%s %s", modifier, name);
+  proto->return_type.name = tmp_name;
+  free(name);
   free(modifier);
 }
 
 void parse_parameters(const char *parameters,
                       struct function_prototype *proto) {
-  size_t sign_length = strnlen(parameters, 100);
-  char *raw = malloc(sign_length);
+  size_t sign_length = strnlen(parameters, MAX_PARAMS_LENGTH);
+  char *raw = calloc(sizeof(char *), sign_length);
   check_malloc(raw);
 
   // substring of parameters, removing parenthesis
@@ -111,7 +115,7 @@ void parse_parameters(const char *parameters,
 
   const char *delimiter = ",";
   struct function_parameter *result =
-      malloc(sizeof(struct function_parameter) * count);
+      calloc(sizeof(struct function_parameter), count);
   check_malloc(result);
   size_t idx = 0;
   char *token = strtok(raw, delimiter);

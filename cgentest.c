@@ -62,6 +62,16 @@ void generate_test(struct arguments *args) {
   fclose(target);
 
   cJSON_Delete(root);
+
+  for (size_t idx = 0; idx < generated_protos_count; idx++)
+    free_proto(&generated_protos[idx]);
+
+  if (generated_protos_count > 0)
+    free(generated_protos);
+
+  for (size_t idx = 0; idx < protos_count; idx++)
+    free_proto(&protos[idx]);
+
   free(protos);
 }
 
@@ -129,6 +139,8 @@ char *generate_target_file(struct arguments *args) {
   char *target = malloc(sizeof(char *) * MAX_FILENAME_LENGTH);
   check_malloc(target);
   snprintf(target, MAX_FILENAME_LENGTH, "%s_test%s", input_name, extension);
+  free(input_name);
+  free(extension);
   return target;
 }
 

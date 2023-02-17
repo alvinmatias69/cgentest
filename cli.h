@@ -15,5 +15,6 @@ struct arguments {
 
 struct arguments parse_args(int argc, char *argv[]);
 void print_args(struct arguments *args);
+void free_args(struct arguments *args);
 
 #endif // CLI_H_

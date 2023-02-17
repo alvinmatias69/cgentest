@@ -11,6 +11,7 @@ int main(int argc, char *argv[]) {
 
   generate_test(&args);
 
+  free_args(&args);
   log_info("success generate tests\n");
 
   return 0;

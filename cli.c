@@ -55,6 +55,15 @@ struct arguments parse_args(int argc, char *argv[]) {
   return args;
 }
 
+void free_args(struct arguments *args) {
+  if (strnlen(args->input, MAX_INPUT_LENGTH) > 0)
+    free(args->input);
+  if (strnlen(args->target, MAX_INPUT_LENGTH) > 0)
+    free(args->target);
+  if (strnlen(args->filter, MAX_INPUT_LENGTH) > 0)
+    free(args->filter);
+}
+
 void print_args(struct arguments *args) {
   printf("Argument list:\n");
   printf("input file: %s\n", args->input);
