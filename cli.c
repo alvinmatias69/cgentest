@@ -103,9 +103,28 @@ void print_args(struct arguments *args) {
 }
 
 // TODO: implement help print
-void print_help(void) { printf("USAGE\n"); }
+void print_help(void) {
+  printf(
+      "cgentest\n"
+      "\n"
+      "Usage:\n"
+      "\tcgentest -i <input_file> [-o <output_file>] [-l <log_level>] [-f "
+      "<filter_query>] [--force]\n"
+      "\tcgentest -h | --help\n"
+      "\tcgentest -v | --version\n"
+      "\n"
+      "Options:\n"
+      "\t-i --input\t Input file\n"
+      "\t-o --output\t Generated test file [default: <input_file>_test.c]\n"
+      "\t-l --log_level\t Log level (debug | info | warn | error [default])\n"
+      "\t-f --filter\t Query filter for function [default: \"\"]\n"
+      "\t-F --force\t Force generate function even if generated function "
+      "exists\n"
+      "\t-h --help\t Show this screen\n"
+      "\t-v --version\t Show version\n");
+}
 
-void print_version(void) { printf("VERSION\n"); }
+void print_version(void) { printf("cgentest 1.0.0\n"); }
 
 void validate_args(struct required_args *req, struct arguments *args) {
   if (!req->input) {
