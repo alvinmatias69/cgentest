@@ -4,6 +4,7 @@
 #include "local_limit.h"
 #include "mapper.h"
 #include "util.h"
+#include <libgen.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -152,11 +153,21 @@ void add_header_to_target(char *input, char *target) {
 
   char *include_header = malloc(sizeof(char *) * MAX_INCLUDE_LENGTH);
   check_malloc(include_header);
-  snprintf(include_header, MAX_INCLUDE_LENGTH, "#include \"%s\"\n", input);
+
+  // clean input name
+  char *input_copy = strndup(input, MAX_INPUT_LENGTH);
+  char *base_input_name = basename(input_copy);
+
+  snprintf(include_header, MAX_INCLUDE_LENGTH,
+           "#include \"%s\" // basefile expected to be in the same directory, "
+           "change this as necesarry\n",
+           base_input_name);
+  free(input_copy);
 
   FILE *f = fopen(target, "w");
   fputs(include_header, f);
-  fputs("#include <stdlib.h>\n\n", f);
+  fputs("#include <stdlib.h>\n", f);
+  fputs("#include <stdio.h>\n\n", f);
   free(include_header);
   fclose(f);
 }

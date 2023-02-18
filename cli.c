@@ -16,15 +16,17 @@ struct arguments parse_args(int argc, char *argv[]) {
   int opt = -1;
   struct arguments args = {
       .custom_target = false,
+      .custom_template = false,
       .ignore_target_current = false,
       .input = "",
       .target = "",
       .filter = "",
+      .template_file = "",
       .log_level = WARN,
   };
   struct required_args req = {0};
 
-  while ((opt = getopt(argc, argv, "hi:o:l:f:F")) != -1) {
+  while ((opt = getopt(argc, argv, "hi:o:l:f:Ft:")) != -1) {
     switch (opt) {
     case 'i':
       args.input = strndup(optarg, MAX_INPUT_LENGTH);
@@ -42,6 +44,10 @@ struct arguments parse_args(int argc, char *argv[]) {
       break;
     case 'F':
       args.ignore_target_current = true;
+      break;
+    case 't':
+      args.custom_template = true;
+      args.template_file = strndup(optarg, MAX_INPUT_LENGTH);
       break;
     case 'h':
       print_help();
@@ -62,6 +68,8 @@ void free_args(struct arguments *args) {
     free(args->target);
   if (strnlen(args->filter, MAX_INPUT_LENGTH) > 0)
     free(args->filter);
+  if (strnlen(args->template_file, MAX_INPUT_LENGTH) > 0)
+    free(args->template_file);
 }
 
 void print_args(struct arguments *args) {
@@ -69,6 +77,8 @@ void print_args(struct arguments *args) {
   printf("input file: %s\n", args->input);
   printf("target file: %s\n", args->target);
   printf("is custom target: %d\n", args->custom_target);
+  printf("template file: %s\n", args->template_file);
+  printf("is custom template: %d\n", args->custom_template);
   printf("filter: %s\n", args->filter);
   printf("log level: %d\n", args->log_level);
 }

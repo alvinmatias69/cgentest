@@ -8,7 +8,9 @@ struct arguments {
   char *input;
   char *target;
   char *filter;
+  char *template_file;
   bool custom_target;
+  bool custom_template;
   bool ignore_target_current;
   enum log_level log_level;
 };

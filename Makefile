@@ -5,7 +5,7 @@
 # @version 0.1
 
 cgentest: main.c cli.o logger.o cgentest.o readtags.o ctags_helper.o mapper.o mustach.o mustach-wrap.o mustach-cjson.o util.o
-	@gcc -o cgentest cli.o logger.o cgentest.o readtags.o ctags_helper.o mapper.o mustach.o mustach-wrap.o mustach-cjson.o util.o main.c -lcjson
+	@gcc -o cgentest cli.o logger.o cgentest.o readtags.o ctags_helper.o mapper.o mustach.o mustach-wrap.o mustach-cjson.o util.o main.c -lcjson -Wall -ggdb3
 
 cli.o: cli.h cli.c
 	@gcc -o cli.o -c cli.c
@@ -19,8 +19,8 @@ cgentest.o: cgentest.h cgentest.c
 ctags_helper.o: ctags_helper.h ctags_helper.c
 	@gcc -o ctags_helper.o -c ctags_helper.c
 
-readtags.o: ./libs/readtags/readtags.h ./libs/readtags/readtags.c
-	@gcc -o readtags.o -c ./libs/readtags.c
+readtags.o: ./libs/libreadtags/readtags.h ./libs/libreadtags/readtags.c
+	@gcc -o readtags.o -c ./libs/libreadtags/readtags.c
 
 mustach.o: ./libs/mustach/mustach.h ./libs/mustach/mustach.c
 	@gcc -o mustach.o -c ./libs/mustach/mustach.c
