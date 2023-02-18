@@ -4,8 +4,8 @@
 # @file
 # @version 0.1
 
-cgentest: main.c cli.o logger.o cgentest.o readtags.o ctags_helper.o mapper.o mustach.o mustach-wrap.o mustach-cjson.o util.o
-	@gcc -o cgentest cli.o logger.o cgentest.o readtags.o ctags_helper.o mapper.o mustach.o mustach-wrap.o mustach-cjson.o util.o main.c -lcjson -Wall -ggdb3
+cgentest: main.c cli.o logger.o cgentest.o readtags.o ctags_helper.o mapper.o mustach.o mustach-wrap.o mustach-cjson.o util.o cJSON.o
+	@gcc -o cgentest cli.o logger.o cgentest.o readtags.o ctags_helper.o mapper.o mustach.o mustach-wrap.o mustach-cjson.o util.o cJSON.o main.c -Wall -ggdb3
 
 cli.o: cli.h cli.c
 	@gcc -o cli.o -c cli.c
@@ -36,5 +36,8 @@ mapper.o: mapper.h mapper.c
 
 util.o: util.h util.c
 	@gcc -o util.o -c util.c
+
+cJSON.o: ./libs/cJSON/cJSON.h ./libs/cJSON/cJSON.c
+	@gcc -o cJSON.o -c ./libs/cJSON/cJSON.c
 
 # end
