@@ -113,6 +113,7 @@ size_t generate_proto(const char *source, struct function_prototype **protos,
     if (count + 1 >= max) {
       max += FUNCTION_PROTO_BOUND;
       *protos = realloc(*protos, sizeof(struct function_prototype) * max);
+      check_malloc(protos);
     }
     (*protos)[count++] = map_proto(&entry, name_only);
     result = (*next)(tags, &entry);
