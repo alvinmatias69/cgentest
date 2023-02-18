@@ -79,7 +79,7 @@ size_t generate_proto(const char *source, struct function_prototype **protos,
                       const char *query, bool name_only) {
   char *tag_name = malloc(sizeof(char *) * MAX_FILENAME_LENGTH);
   check_malloc(tag_name);
-  snprintf(tag_name, MAX_FILENAME_LENGTH, "tags%lu", time(NULL));
+  snprintf(tag_name, MAX_FILENAME_LENGTH, "%s/tags%lu", P_tmpdir, time(NULL));
   log_debugf("tag file: %s\n", tag_name);
 
   tagFile *tags;
