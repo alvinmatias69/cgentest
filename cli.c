@@ -1,5 +1,6 @@
 #include "cli.h"
 #include "local_limit.h"
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,6 +12,17 @@ struct required_args {
 
 void print_help();
 void validate_args(struct required_args *req, struct arguments *args);
+
+static struct option long_options[] = {
+    {"help", no_argument, NULL, 'h'},
+    {"input", required_argument, NULL, 'i'},
+    {"output", optional_argument, NULL, 'o'},
+    {"log_level", optional_argument, NULL, 'l'},
+    {"filter", optional_argument, NULL, 'f'},
+    {"force", optional_argument, NULL, 'F'},
+    {"template", optional_argument, NULL, 't'},
+    {NULL, 0, NULL, 0},
+};
 
 struct arguments parse_args(int argc, char *argv[]) {
   int opt = -1;
@@ -26,7 +38,8 @@ struct arguments parse_args(int argc, char *argv[]) {
   };
   struct required_args req = {0};
 
-  while ((opt = getopt(argc, argv, "hi:o:l:f:Ft:")) != -1) {
+  while ((opt = getopt_long(argc, argv, "hi:o:l:f:Ft:", long_options, NULL)) !=
+         -1) {
     switch (opt) {
     case 'i':
       args.input = strndup(optarg, MAX_INPUT_LENGTH);
