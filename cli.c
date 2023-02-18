@@ -10,10 +10,12 @@ struct required_args {
   bool input;
 };
 
-void print_help();
+void print_help(void);
+void print_version(void);
 void validate_args(struct required_args *req, struct arguments *args);
 
 static struct option long_options[] = {
+    {"version", no_argument, NULL, 'v'},
     {"help", no_argument, NULL, 'h'},
     {"input", required_argument, NULL, 'i'},
     {"output", optional_argument, NULL, 'o'},
@@ -38,7 +40,7 @@ struct arguments parse_args(int argc, char *argv[]) {
   };
   struct required_args req = {0};
 
-  while ((opt = getopt_long(argc, argv, "hi:o:l:f:Ft:", long_options, NULL)) !=
+  while ((opt = getopt_long(argc, argv, "vhi:o:l:f:Ft:", long_options, NULL)) !=
          -1) {
     switch (opt) {
     case 'i':
@@ -64,6 +66,10 @@ struct arguments parse_args(int argc, char *argv[]) {
       break;
     case 'h':
       print_help();
+      exit(0);
+      break;
+    case 'v':
+      print_version();
       exit(0);
       break;
     }
@@ -97,7 +103,9 @@ void print_args(struct arguments *args) {
 }
 
 // TODO: implement help print
-void print_help() { printf("USAGE\n"); }
+void print_help(void) { printf("USAGE\n"); }
+
+void print_version(void) { printf("VERSION\n"); }
 
 void validate_args(struct required_args *req, struct arguments *args) {
   if (!req->input) {
