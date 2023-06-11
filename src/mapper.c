@@ -100,6 +100,7 @@ void parse_return_type(const char *typeref, struct function_prototype *proto) {
 
 void parse_parameters(const char *parameters,
                       struct function_prototype *proto) {
+  // ignore parameters for void (e.g. int example(void))
   if (strncmp(parameters, VOID_PARAMETER, MAX_PARAMS_LENGTH) == 0) {
     return;
   }

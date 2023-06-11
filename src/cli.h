@@ -7,11 +7,14 @@
 struct arguments {
   char *input;
   char *target;
-  char *filter;
+  char *only;
+  char *exclude;
   char *template_file;
   bool custom_target;
   bool custom_template;
   bool ignore_target_current;
+  bool has_only;
+  bool has_exclude;
   enum log_level log_level;
 };
 

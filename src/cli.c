@@ -21,9 +21,10 @@ static struct option long_options[] = {
     {"help", no_argument, NULL, 'h'},
     {"input", required_argument, NULL, 'i'},
     {"output", optional_argument, NULL, 'o'},
-    {"filter", optional_argument, NULL, 'f'},
     {"force", optional_argument, NULL, 'F'},
     {"template", optional_argument, NULL, 't'},
+    {"exclude", optional_argument, NULL, 'e'},
+    {"only", optional_argument, NULL, 'O'},
     {NULL, 0, NULL, 0},
 };
 
@@ -35,22 +36,30 @@ struct arguments parse_args(int argc, char *argv[]) {
       .ignore_target_current = false,
       .input = "",
       .target = "",
-      .filter = "",
+      .only = "",
+      .has_only = false,
+      .exclude = "",
+      .has_exclude = false,
       .template_file = "",
       .log_level = WARN,
   };
   struct required_args req = {0};
 
   int verbosity = 0;
-  while ((opt = getopt_long(argc, argv, "Vvho:l:f:Ft:", long_options, NULL)) !=
-         -1) {
+  while ((opt = getopt_long(argc, argv, "Vvho:l:e:O:Ft:", long_options,
+                            NULL)) != -1) {
     switch (opt) {
     case 'o':
       args.target = strndup(optarg, MAX_INPUT_LENGTH);
       args.custom_target = true;
       break;
-    case 'f':
-      args.filter = strndup(optarg, MAX_INPUT_LENGTH);
+    case 'O':
+      args.only = strndup(optarg, MAX_INPUT_LENGTH);
+      args.has_only = true;
+      break;
+    case 'e':
+      args.exclude = strndup(optarg, MAX_INPUT_LENGTH);
+      args.has_exclude = true;
       break;
     case 'F':
       args.ignore_target_current = true;
@@ -90,8 +99,10 @@ void free_args(struct arguments *args) {
     free(args->input);
   if (strnlen(args->target, MAX_INPUT_LENGTH) > 0)
     free(args->target);
-  if (strnlen(args->filter, MAX_INPUT_LENGTH) > 0)
-    free(args->filter);
+  if (strnlen(args->only, MAX_INPUT_LENGTH) > 0)
+    free(args->only);
+  if (strnlen(args->exclude, MAX_INPUT_LENGTH) > 0)
+    free(args->exclude);
   if (strnlen(args->template_file, MAX_INPUT_LENGTH) > 0)
     free(args->template_file);
 }
@@ -103,7 +114,10 @@ void print_args(struct arguments *args) {
   log_debugf("\tis custom target: %d\n", args->custom_target);
   log_debugf("\ttemplate file: %s\n", args->template_file);
   log_debugf("\tis custom template: %d\n", args->custom_template);
-  log_debugf("\tfilter: %s\n", args->filter);
+  log_debugf("\tonly: %s\n", args->only);
+  log_debugf("\thas only: %d\n", args->has_only);
+  log_debugf("\texclude: %s\n", args->exclude);
+  log_debugf("\thas exclude: %d\n", args->has_exclude);
   log_debugf("\tlog level: %d\n", args->log_level);
 }
 
@@ -117,14 +131,16 @@ void print_help(void) {
       "\t%s -V | --version\n"
       "\n"
       "Options:\n"
-      "\t-i --input\t Input file\n"
-      "\t-o --output\t Generated test file [default: <input_file>_test.c]\n"
+      "\t-o --output\t Path to generated test file. Will print to stdout on "
+      "empty. [default: \"\"]\n"
       "\t-v --verbose\t Log verbosity, add more for more verbose log\n"
-      "\t-l --log_level\t Log level (debug | info | warn | error [default])\n"
-      "\t-f --filter\t Query filter for function [default: \"\"]\n"
+      "\t-O --only\t regexp. Generate tests for functions that match only. "
+      "[default: \"\"]\n"
+      "\t-e --exclude\t regexp. Exclude generate tests for function that "
+      "match. Takes precedence over --only [default: \"\"]\n"
       "\t-F --force\t Force generate function even if generated function "
       "exists\n"
-      "\t-t --template\t Use custom mustache template\n"
+      "\t-t --template\t Path to custom mustache template [default: \"\"]\n"
       "\t-h --help\t Show this screen\n"
       "\t-v --version\t Show version\n",
       PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);

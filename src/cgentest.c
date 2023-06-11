@@ -6,6 +6,7 @@
 #include <libgen.h>
 #include <mustach/mustach-cjson.h>
 #include <readtags.h>
+#include <regex.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
@@ -13,7 +14,7 @@
 char *generate_target_file(struct arguments *args);
 void add_header_to_target(char *input, char *target);
 size_t generate_proto(const char *source, struct function_prototype **protos,
-                      const char *query, bool name_only);
+                      struct arguments *args, bool name_only, bool apply_regex);
 
 void generate_test(struct arguments *args) {
   if (access(args->input, F_OK) != 0) {
@@ -32,7 +33,7 @@ void generate_test(struct arguments *args) {
     check_malloc(generated_protos);
 
     generated_protos_count =
-        generate_proto(target_file_name, &generated_protos, "", true);
+        generate_proto(target_file_name, &generated_protos, args, true, false);
   }
 
   add_header_to_target(args->input, target_file_name);
@@ -40,8 +41,7 @@ void generate_test(struct arguments *args) {
   struct function_prototype *protos =
       malloc(sizeof(struct function_prototype) * FUNCTION_PROTO_BOUND);
   check_malloc(protos);
-  size_t protos_count =
-      generate_proto(args->input, &protos, args->filter, false);
+  size_t protos_count = generate_proto(args->input, &protos, args, false, true);
 
   if (protos_count == 0) {
     log_warn("no function found, exiting.\n");
@@ -89,7 +89,8 @@ void generate_test(struct arguments *args) {
 }
 
 size_t generate_proto(const char *source, struct function_prototype **protos,
-                      const char *query, bool name_only) {
+                      struct arguments *args, bool name_only,
+                      bool apply_regex) {
   char *tag_name = malloc(sizeof(char *) * MAX_FILENAME_LENGTH);
   check_malloc(tag_name);
   snprintf(tag_name, MAX_FILENAME_LENGTH, "%s/tags%lu", P_tmpdir, time(NULL));
@@ -103,16 +104,7 @@ size_t generate_proto(const char *source, struct function_prototype **protos,
 
   size_t count = 0;
   tagEntry entry;
-  tagResult (*next)(tagFile *const, tagEntry *const);
-  tagResult result;
-
-  if (strnlen(query, MAX_QUERY_LENGTH) > 0) {
-    next = tagsFindNext;
-    result = tagsFind(tags, &entry, query, TAG_PARTIALMATCH | TAG_OBSERVECASE);
-  } else {
-    next = tagsNext;
-    result = tagsFirst(tags, &entry);
-  }
+  tagResult result = tagsFirst(tags, &entry);
 
   if (result != TagSuccess) {
     tagsClose(tags);
@@ -121,14 +113,67 @@ size_t generate_proto(const char *source, struct function_prototype **protos,
 
   size_t max = FUNCTION_PROTO_BOUND;
 
+  regex_t only_regex;
+  regex_t excl_regex;
+  if (apply_regex) {
+    if (args->has_only) {
+      int result = regcomp(&only_regex, args->only, 0);
+      if (result != 0) {
+        log_errorf("failure to compile only regex: %s\n", args->only);
+        exit(1);
+      }
+    }
+
+    if (args->has_exclude) {
+      int result = regcomp(&excl_regex, args->exclude, 0);
+      if (result != 0) {
+        log_errorf("failure to compile exclude regex: %s\n", args->exclude);
+        exit(1);
+      }
+    }
+  }
+
   while (result == TagSuccess) {
+    if (apply_regex) {
+      if (args->has_exclude) {
+        int regex_result = regexec(&excl_regex, entry.name, 0, NULL, 0);
+        if (regex_result == 0) {
+          log_debugf("function \"%s\" match exclude pattern \"%s\". Skipping\n",
+                     entry.name, args->exclude);
+          result = tagsNext(tags, &entry);
+          continue;
+        } else if (regex_result == REG_NOMATCH) {
+          log_debug("function doesn't match exclude pattern. Continuing\n");
+        } else {
+          log_error("error while executing exclude regex\n");
+          exit(1);
+        }
+      }
+
+      if (args->has_only) {
+        int regex_result = regexec(&only_regex, entry.name, 0, NULL, 0);
+        if (regex_result == REG_NOMATCH) {
+          log_debugf(
+              "function \"%s\" doesn't match only pattern \"%s\". Skipping\n",
+              entry.name, args->only);
+          result = tagsNext(tags, &entry);
+          continue;
+        } else if (regex_result == 0) {
+          log_debug("function match only pattern. Continuing\n");
+        } else {
+          log_error("error while executing only regex\n");
+          exit(1);
+        }
+      }
+    }
+
     if (count + 1 >= max) {
       max += FUNCTION_PROTO_BOUND;
       *protos = realloc(*protos, sizeof(struct function_prototype) * max);
       check_malloc(protos);
     }
     (*protos)[count++] = map_proto(&entry, name_only);
-    result = (*next)(tags, &entry);
+    result = tagsNext(tags, &entry);
   }
 
   tagsClose(tags);
