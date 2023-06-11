@@ -2,6 +2,7 @@
 #define CGENTEST_H_
 
 #include "cli.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 void generate_test(struct arguments *args);

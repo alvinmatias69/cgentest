@@ -3,12 +3,18 @@
 #include <stdio.h>
 #include <string.h>
 
+struct log *logger;
+
 struct log_mapping {
   enum log_level level;
   const char *str;
 };
 
 void init_logger(struct log *log) { logger = log; }
+
+struct log *get_logger() {
+  return logger;
+};
 
 const static struct log_mapping map[] = {
     {.level = ERROR, .str = "error"},
@@ -27,13 +33,13 @@ enum log_level map_from_string(const char *str) {
 }
 
 void print_log(const char *message, enum log_level level) {
-  if (level <= logger->level) {
+  if (level <= get_logger()->level) {
     printf("%s", message);
   }
 }
 
 void vprint_log(const char *fmt, va_list args, enum log_level level) {
-  if (level <= logger->level) {
+  if (level <= get_logger()->level) {
     vprintf(fmt, args);
   }
 }

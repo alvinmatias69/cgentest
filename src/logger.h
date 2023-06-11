@@ -12,8 +12,6 @@ struct log {
   enum log_level level;
 };
 
-struct log *logger;
-
 void init_logger(struct log *logger);
 
 enum log_level map_from_string(const char *str);

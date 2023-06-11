@@ -1,9 +1,0 @@
-[submodule "libs/libreadtags"]
-	path = libs/libreadtags
-	url = https://github.com/universal-ctags/libreadtags
-[submodule "libs/mustach"]
-	path = libs/mustach
-	url = https://gitlab.com/jobol/mustach
-[submodule "libs/cJSON"]
-	path = libs/cJSON
-	url = https://github.com/DaveGamble/cJSON

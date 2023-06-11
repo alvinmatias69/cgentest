@@ -1,11 +1,11 @@
 #include "cgentest.h"
 #include "ctags_helper.h"
-#include "libs/mustach/mustach-cjson.h"
 #include "local_limit.h"
 #include "mapper.h"
 #include "util.h"
 #include <libgen.h>
-#include <stdio.h>
+#include <mustach/mustach-cjson.h>
+#include <readtags.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
@@ -53,7 +53,12 @@ void generate_test(struct arguments *args) {
                          generated_protos_count);
 
   FILE *target = fopen(target_file_name, "a");
-  char *template = read_file("template");
+  char *template;
+  if (access(INSTALLED_TEMPLATE_PATH, F_OK) == 0) {
+    template = read_file(INSTALLED_TEMPLATE_PATH);
+  } else {
+    template = read_file(LOCAL_TEMPLATE_PATH);
+  }
 
   int write_result =
       mustach_cJSON_file(template, 0, root, Mustach_With_AllExtensions, target);

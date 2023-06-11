@@ -5,7 +5,7 @@
 
 void check_malloc(void *ptr) {
   if (ptr == NULL) {
-    log_error("error while allocating memory.");
+    log_error("error while allocating memory.\n");
     exit(1);
   }
 }
