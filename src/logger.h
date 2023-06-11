@@ -14,7 +14,7 @@ struct log {
 
 void init_logger(struct log *logger);
 
-enum log_level map_from_string(const char *str);
+enum log_level map_from_level(const int level);
 
 void log_error(const char *message);
 void log_errorf(const char *fmt, ...);

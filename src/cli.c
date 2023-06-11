@@ -16,11 +16,11 @@ void print_version(void);
 void validate_args(struct required_args *req, struct arguments *args);
 
 static struct option long_options[] = {
-    {"version", no_argument, NULL, 'v'},
+    {"version", no_argument, NULL, 'V'},
+    {"verbose", no_argument, NULL, 'v'},
     {"help", no_argument, NULL, 'h'},
     {"input", required_argument, NULL, 'i'},
     {"output", optional_argument, NULL, 'o'},
-    {"log_level", optional_argument, NULL, 'l'},
     {"filter", optional_argument, NULL, 'f'},
     {"force", optional_argument, NULL, 'F'},
     {"template", optional_argument, NULL, 't'},
@@ -41,19 +41,13 @@ struct arguments parse_args(int argc, char *argv[]) {
   };
   struct required_args req = {0};
 
-  while ((opt = getopt_long(argc, argv, "vhi:o:l:f:Ft:", long_options, NULL)) !=
+  int verbosity = 0;
+  while ((opt = getopt_long(argc, argv, "Vvho:l:f:Ft:", long_options, NULL)) !=
          -1) {
     switch (opt) {
-    case 'i':
-      args.input = strndup(optarg, MAX_INPUT_LENGTH);
-      req.input = true;
-      break;
     case 'o':
       args.target = strndup(optarg, MAX_INPUT_LENGTH);
       args.custom_target = true;
-      break;
-    case 'l':
-      args.log_level = map_from_string(optarg);
       break;
     case 'f':
       args.filter = strndup(optarg, MAX_INPUT_LENGTH);
@@ -69,13 +63,23 @@ struct arguments parse_args(int argc, char *argv[]) {
       print_help();
       exit(0);
       break;
-    case 'v':
+    case 'V':
       print_version();
       exit(0);
+      break;
+    case 'v':
+      verbosity++;
       break;
     }
   }
 
+  char **positionals = &argv[optind];
+  for (; *positionals; positionals++) {
+    args.input = strndup(*positionals, MAX_INPUT_LENGTH);
+    req.input = true;
+  }
+
+  args.log_level = map_from_level(verbosity);
   validate_args(&req, &args);
 
   return args;
@@ -108,19 +112,19 @@ void print_help(void) {
       "%s\n"
       "\n"
       "Usage:\n"
-      "\t%s -i <input_file> [-o <output_file>] [-l <log_level>] [-f "
-      "<filter_query>] [--force]\n"
+      "\t%s [-o <output_file>] [-v] [-f <filter_query>] [--force] INPUT_FILE\n"
       "\t%s -h | --help\n"
-      "\t%s -v | --version\n"
+      "\t%s -V | --version\n"
       "\n"
       "Options:\n"
       "\t-i --input\t Input file\n"
       "\t-o --output\t Generated test file [default: <input_file>_test.c]\n"
+      "\t-v --verbose\t Log verbosity, add more for more verbose log\n"
       "\t-l --log_level\t Log level (debug | info | warn | error [default])\n"
       "\t-f --filter\t Query filter for function [default: \"\"]\n"
       "\t-F --force\t Force generate function even if generated function "
       "exists\n"
-      "\t-t --template Use custom mustache template"
+      "\t-t --template\t Use custom mustache template\n"
       "\t-h --help\t Show this screen\n"
       "\t-v --version\t Show version\n",
       PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
@@ -131,11 +135,6 @@ void print_version(void) { printf("%s\n", PACKAGE_STRING); }
 void validate_args(struct required_args *req, struct arguments *args) {
   if (!req->input) {
     printf("input file is required\n");
-    exit(1);
-  }
-
-  if (args->log_level == -1) {
-    printf("invalid log level\n");
     exit(1);
   }
 }

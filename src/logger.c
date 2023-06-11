@@ -5,31 +5,23 @@
 
 struct log *logger;
 
-struct log_mapping {
-  enum log_level level;
-  const char *str;
-};
-
 void init_logger(struct log *log) { logger = log; }
 
 struct log *get_logger() {
   return logger;
 };
 
-const static struct log_mapping map[] = {
-    {.level = ERROR, .str = "error"},
-    {.level = WARN, .str = "warn"},
-    {.level = INFO, .str = "info"},
-    {.level = DEBUG, .str = "debug"},
-};
-
-enum log_level map_from_string(const char *str) {
-  for (int idx = 0; idx < sizeof(map) / sizeof(map[0]); idx++) {
-    if (strncmp(str, map[idx].str, 20) == 0) {
-      return map[idx].level;
-    }
+enum log_level map_from_level(const int level) {
+  switch (level) {
+  case 0:
+    return ERROR;
+  case 1:
+    return WARN;
+  case 2:
+    return INFO;
+  default:
+    return DEBUG;
   }
-  return -1;
 }
 
 void print_log(const char *message, enum log_level level) {
