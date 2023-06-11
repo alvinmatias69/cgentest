@@ -54,6 +54,7 @@ void generate_test(struct arguments *args) {
 
   FILE *target = fopen(target_file_name, "a");
   char *template;
+  // TODO: add custom template handle
   if (access(INSTALLED_TEMPLATE_PATH, F_OK) == 0) {
     template = read_file(INSTALLED_TEMPLATE_PATH);
   } else {

@@ -93,14 +93,14 @@ void free_args(struct arguments *args) {
 }
 
 void print_args(struct arguments *args) {
-  printf("Argument list:\n");
-  printf("input file: %s\n", args->input);
-  printf("target file: %s\n", args->target);
-  printf("is custom target: %d\n", args->custom_target);
-  printf("template file: %s\n", args->template_file);
-  printf("is custom template: %d\n", args->custom_template);
-  printf("filter: %s\n", args->filter);
-  printf("log level: %d\n", args->log_level);
+  log_debug("Argument list:\n");
+  log_debugf("\tinput file: %s\n", args->input);
+  log_debugf("\ttarget file: %s\n", args->target);
+  log_debugf("\tis custom target: %d\n", args->custom_target);
+  log_debugf("\ttemplate file: %s\n", args->template_file);
+  log_debugf("\tis custom template: %d\n", args->custom_template);
+  log_debugf("\tfilter: %s\n", args->filter);
+  log_debugf("\tlog level: %d\n", args->log_level);
 }
 
 void print_help(void) {

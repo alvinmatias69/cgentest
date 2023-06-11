@@ -7,6 +7,7 @@ int main(int argc, char *argv[]) {
 
   struct log logger = {.level = args.log_level};
   init_logger(&logger);
+  print_args(&args);
 
   generate_test(&args);
 

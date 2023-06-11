@@ -9,6 +9,7 @@
 #define PARAMETER_INDICATOR "signature"
 #define PRIMITIVE_INDICATOR "typename"
 #define VOID_INDICATOR "void"
+#define VOID_PARAMETER "(void)"
 
 void parse_return_type(const char *typeref, struct function_prototype *proto);
 void parse_parameters(const char *parameters, struct function_prototype *proto);
@@ -99,6 +100,9 @@ void parse_return_type(const char *typeref, struct function_prototype *proto) {
 
 void parse_parameters(const char *parameters,
                       struct function_prototype *proto) {
+  if (strncmp(parameters, VOID_PARAMETER, MAX_PARAMS_LENGTH) == 0) {
+    return;
+  }
   size_t sign_length = strnlen(parameters, MAX_PARAMS_LENGTH);
   char *raw = calloc(sizeof(char *), sign_length);
   check_malloc(raw);

@@ -34,13 +34,13 @@ enum log_level map_from_string(const char *str) {
 
 void print_log(const char *message, enum log_level level) {
   if (level <= get_logger()->level) {
-    printf("%s", message);
+    fprintf(stderr, "%s", message);
   }
 }
 
 void vprint_log(const char *fmt, va_list args, enum log_level level) {
   if (level <= get_logger()->level) {
-    vprintf(fmt, args);
+    vfprintf(stderr, fmt, args);
   }
 }
 
