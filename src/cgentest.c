@@ -54,8 +54,14 @@ void generate_test(struct arguments *args) {
 
   FILE *target = fopen(target_file_name, "a");
   char *template;
-  // TODO: add custom template handle
-  if (access(INSTALLED_TEMPLATE_PATH, F_OK) == 0) {
+  if (args->custom_template) {
+    if (access(args->template_file, F_OK) != 0) {
+      log_errorf("Unable to find custom template file in: %s\n",
+                 args->template_file);
+      exit(1);
+    }
+    template = read_file(args->template_file);
+  } else if (access(INSTALLED_TEMPLATE_PATH, F_OK) == 0) {
     template = read_file(INSTALLED_TEMPLATE_PATH);
   } else {
     template = read_file(LOCAL_TEMPLATE_PATH);

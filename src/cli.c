@@ -105,13 +105,13 @@ void print_args(struct arguments *args) {
 
 void print_help(void) {
   printf(
-      "cgentest\n"
+      "%s\n"
       "\n"
       "Usage:\n"
-      "\tcgentest -i <input_file> [-o <output_file>] [-l <log_level>] [-f "
+      "\t%s -i <input_file> [-o <output_file>] [-l <log_level>] [-f "
       "<filter_query>] [--force]\n"
-      "\tcgentest -h | --help\n"
-      "\tcgentest -v | --version\n"
+      "\t%s -h | --help\n"
+      "\t%s -v | --version\n"
       "\n"
       "Options:\n"
       "\t-i --input\t Input file\n"
@@ -120,8 +120,10 @@ void print_help(void) {
       "\t-f --filter\t Query filter for function [default: \"\"]\n"
       "\t-F --force\t Force generate function even if generated function "
       "exists\n"
+      "\t-t --template Use custom mustache template"
       "\t-h --help\t Show this screen\n"
-      "\t-v --version\t Show version\n");
+      "\t-v --version\t Show version\n",
+      PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
 }
 
 void print_version(void) { printf("%s\n", PACKAGE_STRING); }
