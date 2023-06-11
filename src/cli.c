@@ -1,4 +1,5 @@
 #include "cli.h"
+#include "config.h"
 #include "local_limit.h"
 #include <getopt.h>
 #include <stdio.h>
@@ -102,7 +103,6 @@ void print_args(struct arguments *args) {
   printf("log level: %d\n", args->log_level);
 }
 
-// TODO: implement help print
 void print_help(void) {
   printf(
       "cgentest\n"
@@ -124,7 +124,7 @@ void print_help(void) {
       "\t-v --version\t Show version\n");
 }
 
-void print_version(void) { printf("cgentest 1.0.0\n"); }
+void print_version(void) { printf("%s\n", PACKAGE_STRING); }
 
 void validate_args(struct required_args *req, struct arguments *args) {
   if (!req->input) {

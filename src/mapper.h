@@ -1,8 +1,8 @@
 #ifndef MAPPER
 #define MAPPER
 
-#include "libs/cJSON/cJSON.h"
-#include "libs/libreadtags/readtags.h"
+#include <cjson/cJSON.h>
+#include <readtags.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
