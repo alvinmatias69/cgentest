@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
+// logger don't need structure? can be a simple enum
 struct log *logger;
 
 void init_logger(struct log *log) { logger = log; }
 
+// maybe we don't need getter
 struct log *get_logger() {
   return logger;
 };

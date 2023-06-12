@@ -4,7 +4,9 @@
 #include <stdlib.h>
 
 void generate_tags(const char *source, const char *target, tagFile **tags) {
+  // set the limit in local limit header
   char command[100];
+  // set the ctags executable to be customizable via arguments
   snprintf(command, sizeof command,
            "ctags --kinds-c=f --_xformat=\"%%N %%t %%S\" -o %s %s", target,
            source);

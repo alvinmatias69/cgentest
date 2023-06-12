@@ -22,6 +22,18 @@ void generate_test(struct arguments *args) {
     exit(1);
   }
 
+  struct function_prototype *protos =
+      malloc(sizeof(struct function_prototype) * FUNCTION_PROTO_BOUND);
+  check_malloc(protos);
+  size_t protos_count = generate_proto(args->input, &protos, args, false, true);
+
+  if (protos_count == 0) {
+    log_warn("no function found, exiting.\n");
+    free(protos);
+    exit(0);
+  }
+
+  // can be disabled for non custom target
   char *target_file_name = generate_target_file(args);
   log_debugf("target file: %s\n", target_file_name);
 
@@ -36,17 +48,8 @@ void generate_test(struct arguments *args) {
         generate_proto(target_file_name, &generated_protos, args, true, false);
   }
 
-  struct function_prototype *protos =
-      malloc(sizeof(struct function_prototype) * FUNCTION_PROTO_BOUND);
-  check_malloc(protos);
-  size_t protos_count = generate_proto(args->input, &protos, args, false, true);
-
-  if (protos_count == 0) {
-    log_warn("no function found, exiting.\n");
-    free(protos);
-    exit(0);
-  }
-
+  // can be optimized for non custom target
+  // handle multiple json lib
   cJSON *root = map_json(&protos, protos_count, &generated_protos,
                          generated_protos_count, args->custom_target);
 
@@ -62,7 +65,7 @@ void generate_test(struct arguments *args) {
     template = read_file(INSTALLED_TEMPLATE_PATH);
   } else {
     template = read_file(LOCAL_TEMPLATE_PATH);
-  }
+  } // handle if no default template found
 
   add_header_to_target(args->input, target_file_name, args->custom_target);
   FILE *target;
@@ -71,6 +74,7 @@ void generate_test(struct arguments *args) {
   } else {
     target = stdout;
   }
+  // handle multiple json lib
   int write_result =
       mustach_cJSON_file(template, 0, root, Mustach_With_AllExtensions, target);
 
@@ -81,6 +85,7 @@ void generate_test(struct arguments *args) {
   if (args->custom_target)
     fclose(target);
 
+  // handle multiple json lib
   cJSON_Delete(root);
 
   for (size_t idx = 0; idx < generated_protos_count; idx++)
@@ -142,6 +147,7 @@ size_t generate_proto(const char *source, struct function_prototype **protos,
 
   while (result == TagSuccess) {
     if (apply_regex) {
+      // generalize this if possible
       if (args->has_exclude) {
         int regex_result = regexec(&excl_regex, entry.name, 0, NULL, 0);
         if (regex_result == 0) {
@@ -187,6 +193,7 @@ size_t generate_proto(const char *source, struct function_prototype **protos,
   return count;
 }
 
+// TODO: delete this as we default to stdout instead
 char *generate_target_file(struct arguments *args) {
   if (args->custom_target) {
     return args->target;
@@ -229,6 +236,7 @@ void add_header_to_target(char *input, char *target, bool is_custom_target) {
            base_input_name);
   free(input_copy);
 
+  // can be optimized by passing the FILE from main function inste
   FILE *f;
   if (is_custom_target) {
     f = fopen(target, "w");

@@ -83,6 +83,7 @@ struct arguments parse_args(int argc, char *argv[]) {
   }
 
   char **positionals = &argv[optind];
+  // handle multiple inputs?
   for (; *positionals; positionals++) {
     args.input = strndup(*positionals, MAX_INPUT_LENGTH);
     req.input = true;

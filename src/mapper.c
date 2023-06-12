@@ -39,6 +39,7 @@ struct function_prototype map_proto(tagEntry *entry, bool name_only) {
   return proto;
 }
 
+// utilize this for debug
 void print_proto(struct function_prototype *proto) {
   log_debug("function prototype\n");
   log_debugf("name: %s\n", proto->name);
@@ -151,6 +152,7 @@ void parse_parameters(const char *parameters,
   free(raw);
 }
 
+// refactor this to handle other json lib
 cJSON *map_json(struct function_prototype **protos, size_t count,
                 struct function_prototype **filter_out, size_t filter_out_count,
                 bool is_custom_target) {
@@ -199,6 +201,8 @@ cJSON *map_json(struct function_prototype **protos, size_t count,
   return root;
 }
 
+// I don't think this one belong in mapper
+// we should move this to util
 bool find_function_name(const char *name, struct function_prototype **protos,
                         size_t proto_count) {
   if (proto_count == 0)
