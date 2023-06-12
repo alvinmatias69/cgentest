@@ -12,7 +12,7 @@
 #include <unistd.h>
 
 char *generate_target_file(struct arguments *args);
-void add_header_to_target(char *input, char *target);
+void add_header_to_target(char *input, char *target, bool is_custom_target);
 size_t generate_proto(const char *source, struct function_prototype **protos,
                       struct arguments *args, bool name_only, bool apply_regex);
 
@@ -36,8 +36,6 @@ void generate_test(struct arguments *args) {
         generate_proto(target_file_name, &generated_protos, args, true, false);
   }
 
-  add_header_to_target(args->input, target_file_name);
-
   struct function_prototype *protos =
       malloc(sizeof(struct function_prototype) * FUNCTION_PROTO_BOUND);
   check_malloc(protos);
@@ -50,9 +48,8 @@ void generate_test(struct arguments *args) {
   }
 
   cJSON *root = map_json(&protos, protos_count, &generated_protos,
-                         generated_protos_count);
+                         generated_protos_count, args->custom_target);
 
-  FILE *target = fopen(target_file_name, "a");
   char *template;
   if (args->custom_template) {
     if (access(args->template_file, F_OK) != 0) {
@@ -67,6 +64,13 @@ void generate_test(struct arguments *args) {
     template = read_file(LOCAL_TEMPLATE_PATH);
   }
 
+  add_header_to_target(args->input, target_file_name, args->custom_target);
+  FILE *target;
+  if (args->custom_target) {
+    target = fopen(target_file_name, "a");
+  } else {
+    target = stdout;
+  }
   int write_result =
       mustach_cJSON_file(template, 0, root, Mustach_With_AllExtensions, target);
 
@@ -74,7 +78,8 @@ void generate_test(struct arguments *args) {
     free(target_file_name);
 
   free(template);
-  fclose(target);
+  if (args->custom_target)
+    fclose(target);
 
   cJSON_Delete(root);
 
@@ -205,8 +210,8 @@ char *generate_target_file(struct arguments *args) {
   return target;
 }
 
-void add_header_to_target(char *input, char *target) {
-  if (access(target, F_OK) == 0) {
+void add_header_to_target(char *input, char *target, bool is_custom_target) {
+  if (is_custom_target && access(target, F_OK) == 0) {
     log_debug("target already exist, skipping header generation\n");
     return;
   }
@@ -224,10 +229,16 @@ void add_header_to_target(char *input, char *target) {
            base_input_name);
   free(input_copy);
 
-  FILE *f = fopen(target, "w");
+  FILE *f;
+  if (is_custom_target) {
+    f = fopen(target, "w");
+  } else {
+    f = stdout;
+  }
   fputs(include_header, f);
   fputs("#include <stdlib.h>\n", f);
   fputs("#include <stdio.h>\n\n", f);
   free(include_header);
-  fclose(f);
+  if (is_custom_target)
+    fclose(f);
 }

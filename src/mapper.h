@@ -24,8 +24,8 @@ struct function_prototype {
 
 struct function_prototype map_proto(tagEntry *entry, bool name_only);
 cJSON *map_json(struct function_prototype **protos, size_t count,
-                struct function_prototype **filter_out,
-                size_t filter_out_count);
+                struct function_prototype **filter_out, size_t filter_out_count,
+                bool is_custom_target);
 void print_proto(struct function_prototype *proto);
 void free_proto(struct function_prototype *proto);
 

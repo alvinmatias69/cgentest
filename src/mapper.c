@@ -152,14 +152,15 @@ void parse_parameters(const char *parameters,
 }
 
 cJSON *map_json(struct function_prototype **protos, size_t count,
-                struct function_prototype **filter_out,
-                size_t filter_out_count) {
+                struct function_prototype **filter_out, size_t filter_out_count,
+                bool is_custom_target) {
   cJSON *root = cJSON_CreateObject();
   cJSON *protos_json = cJSON_CreateArray();
   cJSON_AddItemToObject(root, "function_prototypes", protos_json);
 
   for (size_t idx = 0; idx < count; idx++) {
-    if (find_function_name((*protos)[idx].name, filter_out, filter_out_count)) {
+    if (is_custom_target &&
+        find_function_name((*protos)[idx].name, filter_out, filter_out_count)) {
       log_warnf("test for function %s is already available. Skipping..\n",
                 (*protos)[idx].name);
       continue;
