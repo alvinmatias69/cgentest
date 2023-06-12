@@ -70,7 +70,9 @@ void generate_test(struct arguments *args) {
   int write_result =
       mustach_cJSON_file(template, 0, root, Mustach_With_AllExtensions, target);
 
-  free(target_file_name);
+  if (!args->custom_target)
+    free(target_file_name);
+
   free(template);
   fclose(target);
 
