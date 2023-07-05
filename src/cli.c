@@ -25,6 +25,7 @@ static struct option long_options[] = {
     {"template", optional_argument, NULL, 't'},
     {"exclude", optional_argument, NULL, 'e'},
     {"only", optional_argument, NULL, 'O'},
+    {"bin", optional_argument, NULL, 'b'},
     {NULL, 0, NULL, 0},
 };
 
@@ -42,11 +43,13 @@ struct arguments parse_args(int argc, char *argv[]) {
       .has_exclude = false,
       .template_file = "",
       .log_level = WARN,
+      .ctags_bin_path = "",
+      .has_custom_ctags_bin = false,
   };
   struct required_args req = {0};
 
   int verbosity = 0;
-  while ((opt = getopt_long(argc, argv, "Vvho:l:e:O:Ft:", long_options,
+  while ((opt = getopt_long(argc, argv, "Vvho:b:l:e:O:Ft:", long_options,
                             NULL)) != -1) {
     switch (opt) {
     case 'o':
@@ -78,6 +81,10 @@ struct arguments parse_args(int argc, char *argv[]) {
       break;
     case 'v':
       verbosity++;
+      break;
+    case 'b':
+      args.has_custom_ctags_bin = true;
+      args.ctags_bin_path = strndup(optarg, MAX_INPUT_LENGTH);
       break;
     }
   }

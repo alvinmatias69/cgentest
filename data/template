@@ -1,4 +1,10 @@
-{{#function_prototypes}}
+{{#use_header}}
+#include "{{source}}" basefile expected to be in the same directory, change this as necesarry//
+#include <stdlib.h>
+#include <stdio.h>
+
+{{/use_header}}
+{{#metadata_list}}
 
 void {{name}}_test() {
     struct {
@@ -34,4 +40,4 @@ void {{name}}_test() {
         {{/is_void}}
     }
 }
-{{/function_prototypes}}
+{{/metadata_list}}

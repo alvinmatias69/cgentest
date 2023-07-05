@@ -10,11 +10,13 @@ struct arguments {
   char *only;
   char *exclude;
   char *template_file;
+  char *ctags_bin_path;
   bool custom_target;
   bool custom_template;
   bool ignore_target_current;
   bool has_only;
   bool has_exclude;
+  bool has_custom_ctags_bin;
   enum log_level log_level;
 };
 
