@@ -62,3 +62,11 @@ void free_metadata(struct metadata *metadata) {
   if (metadata->parameter_count > 0)
     free(metadata->params);
 }
+
+void print_metadata_list(struct metadata_list *list) {
+  log_infof("count: %d\n", list->count);
+
+  for (size_t idx = 0; idx < list->count; idx++) {
+    log_infof("name: %s\n", list->list[idx].name);
+  }
+}

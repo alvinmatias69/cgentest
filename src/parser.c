@@ -19,10 +19,10 @@
 void generate_tags(const char *source, bool has_custom_ctags_bin,
                    char *ctags_bin_path, tagFile **tags);
 void compile_regex(bool enabled, char *pattern, regex_t *regex);
-bool regex_match(bool enabled, const char *string, regex_t *regex,
-                 char *pattern);
+bool regex_match(const char *string, regex_t *regex, char *pattern);
 struct metadata parse_single(tagEntry *entry, bool name_only);
 void parse_return_type(const char *typeref, struct metadata *metadata);
+void parse_parameters(const char *parameters, struct metadata *metadata);
 
 struct metadata_list *parse(struct parse_arguments *args) {
   struct metadata_list *result =
@@ -57,9 +57,10 @@ struct metadata_list *parse(struct parse_arguments *args) {
 
   while (tag_result == TagSuccess) {
     // skip parsing if match the filter
-    if (regex_match(apply_excl_filter, entry.name, &excl_regex,
-                    args->exclude) ||
-        !regex_match(apply_only_filter, entry.name, &only_regex, args->only)) {
+    if ((apply_excl_filter &&
+         regex_match(entry.name, &excl_regex, args->exclude)) ||
+        (apply_only_filter &&
+         !regex_match(entry.name, &only_regex, args->only))) {
       tag_result = tagsNext(tags, &entry);
       continue;
     }
@@ -75,6 +76,8 @@ struct metadata_list *parse(struct parse_arguments *args) {
   }
 
   tagsClose(tags);
+  result->list = list;
+  print_metadata_list(result);
   return result;
 }
 
@@ -131,11 +134,7 @@ void compile_regex(bool enabled, char *pattern, regex_t *regex) {
   }
 }
 
-bool regex_match(bool enabled, const char *string, regex_t *regex,
-                 char *pattern) {
-  if (!enabled)
-    return true;
-
+bool regex_match(const char *string, regex_t *regex, char *pattern) {
   int result = regexec(regex, string, 0, NULL, 0);
 
   if (result == 0) {
@@ -167,7 +166,7 @@ struct metadata parse_single(tagEntry *entry, bool name_only) {
       parse_return_type(entry->fields.list[idx].value, &metadata);
     } else if (strncmp(entry->fields.list[idx].key, PARAMETER_INDICATOR,
                        MAX_TOKEN_LENGTH) == 0) {
-      // parse parameters
+      parse_parameters(entry->fields.list[idx].value, &metadata);
     }
   }
 

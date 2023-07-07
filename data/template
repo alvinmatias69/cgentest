@@ -1,5 +1,5 @@
 {{#use_header}}
-#include "{{source}}" basefile expected to be in the same directory, change this as necesarry//
+#include "{{source}}"
 #include <stdlib.h>
 #include <stdio.h>
 

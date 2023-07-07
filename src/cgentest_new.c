@@ -39,14 +39,15 @@ void generate_test(struct arguments *args) {
   FILE *target = stdout;
   struct metadata_list *target_metadata = NULL;
   if (args->custom_target) {
-    if (access(args->target, F_OK) != 0) {
+    if (access(args->target, F_OK) == 0) {
       use_header = false;
-    } else if (!args->ignore_target_current) {
-      // change arguments for target only
-      parse_arguments.name_only = true;
-      parse_arguments.apply_filter = false;
-      parse_arguments.input = args->target;
-      target_metadata = parse(&parse_arguments);
+      if (!args->ignore_target_current) {
+        // change arguments for target only
+        parse_arguments.name_only = true;
+        parse_arguments.apply_filter = false;
+        parse_arguments.input = args->target;
+        target_metadata = parse(&parse_arguments);
+      }
     }
     target = fopen(args->target, "a");
   }
@@ -64,6 +65,8 @@ void generate_test(struct arguments *args) {
   }
 
   char *template = get_template(args);
+
+  print_metadata_list(result);
 
   struct write_result_params write_arguments = {
       .metadata_list = result,
@@ -105,13 +108,10 @@ struct metadata_list *filter(struct metadata_list *source,
   result->list = reallocarray(NULL, sizeof(struct metadata), source->count);
   check_malloc(result->list);
 
-  // track current item for result
-  size_t current = 0;
-
   for (size_t idx = 0; idx < source->count; idx++) {
     char *name = reallocarray(NULL, sizeof(char), MAX_FUNCTION_NAME_LENGTH);
     check_malloc(name);
-    snprintf(name, MAX_FUNCTION_NAME_LENGTH, "%s_test", source->list[idx]);
+    snprintf(name, MAX_FUNCTION_NAME_LENGTH, "%s_test", source->list[idx].name);
 
     if (name_in_list(target, name)) {
       log_debugf("function %s already present in target. Skipping...\n", name);
@@ -120,7 +120,7 @@ struct metadata_list *filter(struct metadata_list *source,
       continue;
     }
 
-    result->list[current++] = source->list[idx];
+    result->list[result->count++] = source->list[idx];
     free(name);
   }
 

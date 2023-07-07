@@ -5,7 +5,7 @@ enum log_level {
   ERROR,
   WARN,
   INFO,
-  DEBUG,
+  D3BUG,
 };
 
 struct log {

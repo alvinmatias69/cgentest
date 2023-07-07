@@ -22,7 +22,7 @@ enum log_level map_from_level(const int level) {
   case 2:
     return INFO;
   default:
-    return DEBUG;
+    return D3BUG;
   }
 }
 
@@ -65,11 +65,11 @@ void log_infof(const char *fmt, ...) {
   va_end(args);
 }
 
-void log_debug(const char *message) { print_log(message, DEBUG); }
+void log_debug(const char *message) { print_log(message, D3BUG); }
 
 void log_debugf(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  vprint_log(fmt, args, DEBUG);
+  vprint_log(fmt, args, D3BUG);
   va_end(args);
 }
