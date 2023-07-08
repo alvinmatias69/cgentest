@@ -80,9 +80,8 @@ void generate_test(struct arguments *args) {
 char *get_template(struct arguments *args) {
   if (args->custom_template) {
     if (access(args->template_file, F_OK) != 0) {
-      log_errorf("Unable to find custom template file in: %s\n",
-                 args->template_file);
-      exit(1);
+      throwf("Unable to find custom template file in: %s\n",
+             args->template_file);
     }
     return read_file(args->template_file);
   } else if (access(INSTALLED_TEMPLATE_PATH, F_OK) == 0) {
@@ -90,8 +89,7 @@ char *get_template(struct arguments *args) {
   } else if (access(LOCAL_TEMPLATE_PATH, F_OK) == 0) {
     return read_file(LOCAL_TEMPLATE_PATH);
   } else {
-    log_error("Unable to find any template\n");
-    exit(1);
+    throw("Unable to find any template\n");
   }
 }
 

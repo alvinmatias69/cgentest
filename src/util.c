@@ -6,8 +6,7 @@
 
 void check_malloc(void *ptr) {
   if (ptr == NULL) {
-    log_error("error while allocating memory.\n");
-    exit(1);
+    throw("error while allocating memory.\n");
   }
 }
 
@@ -68,4 +67,17 @@ void print_metadata_list(struct metadata_list *list) {
   for (size_t idx = 0; idx < list->count; idx++) {
     log_infof("name: %s\n", list->list[idx].name);
   }
+}
+
+void throw(const char *msg) {
+  log_error(msg);
+  exit(1);
+}
+
+void throwf(const char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  vprint_log(fmt, args, ERROR_LEVEL);
+  va_end(args);
+  exit(1);
 }

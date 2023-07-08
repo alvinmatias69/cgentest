@@ -10,6 +10,7 @@ char *read_file(char *path);
 bool name_in_list(struct metadata_list *list, char *query);
 void free_metadata(struct metadata *metadata);
 void free_metadata_list(struct metadata_list *list, bool free_member);
-void print_metadata_list(struct metadata_list *list);
+void throw(const char *msg);
+void throwf(const char *fmt, ...);
 
 #endif // UTIL_H_

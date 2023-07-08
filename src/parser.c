@@ -54,6 +54,7 @@ struct metadata_list *parse(struct parse_arguments *args) {
   size_t max = FUNCTION_PROTO_BOUND;
   struct metadata *list =
       reallocarray(NULL, sizeof(struct metadata), FUNCTION_PROTO_BOUND);
+  check_malloc(list);
 
   while (tag_result == TagSuccess) {
     // skip parsing if match the filter
@@ -241,8 +242,10 @@ void parse_parameters(const char *parameters, struct metadata *metadata) {
       }
     }
 
-    char *name =
-        reallocarray(NULL, sizeof(char *), token_length - whitespace_loc);
+    char *name = reallocarray(
+        NULL, sizeof(char *),
+        token_length -
+            whitespace_loc); // TODO: might return null for variadic params
     check_malloc(name);
     char *type = reallocarray(NULL, sizeof(char *), whitespace_loc + 1);
     check_malloc(type);

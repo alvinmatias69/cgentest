@@ -42,7 +42,7 @@ struct arguments parse_args(int argc, char *argv[]) {
       .exclude = "",
       .has_exclude = false,
       .template_file = "",
-      .log_level = WARN,
+      .log_level = WARN_LEVEL,
       .ctags_bin_path = "",
       .has_custom_ctags_bin = false,
   };
