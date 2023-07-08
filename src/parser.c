@@ -27,8 +27,7 @@ void parse_parameters(const char *parameters, struct metadata *metadata);
 
 struct metadata_list *parse(struct parse_arguments *args) {
   struct metadata_list *result =
-      reallocarray(NULL, sizeof(struct metadata_list), 1);
-  check_malloc(result);
+      reallocarray_with_check(NULL, 1, sizeof(struct metadata_list));
   result->count = 0;
 
   tagFile *tags;
@@ -53,9 +52,8 @@ struct metadata_list *parse(struct parse_arguments *args) {
   compile_regex(apply_excl_filter, args->exclude, &excl_regex);
 
   size_t max = FUNCTION_PROTO_BOUND;
-  struct metadata *list =
-      reallocarray(NULL, sizeof(struct metadata), FUNCTION_PROTO_BOUND);
-  check_malloc(list);
+  struct metadata *list = reallocarray_with_check(NULL, FUNCTION_PROTO_BOUND,
+                                                  sizeof(struct metadata));
 
   while (tag_result == TagSuccess) {
     // skip parsing if match the filter
@@ -69,8 +67,7 @@ struct metadata_list *parse(struct parse_arguments *args) {
 
     if (result->count + 1 >= max) {
       max += FUNCTION_PROTO_BOUND;
-      list = reallocarray(list, sizeof(struct metadata), max);
-      check_malloc(list);
+      list = reallocarray_with_check(list, max, sizeof(struct metadata));
     }
 
     list[result->count++] = parse_single(&entry, args->name_only);
@@ -90,8 +87,8 @@ void generate_tags(const char *source, bool has_custom_ctags_bin,
     ctags_bin = ctags_bin_path;
   }
 
-  char *target_name = reallocarray(NULL, sizeof(char *), MAX_FILENAME_LENGTH);
-  check_malloc(target_name);
+  char *target_name =
+      reallocarray_with_check(NULL, MAX_FILENAME_LENGTH, sizeof(char));
   snprintf(target_name, MAX_FILENAME_LENGTH, TAGS_FILENAME_FMT, P_tmpdir,
            time(NULL));
   log_debugf("tag file: %s\n", target_name);
@@ -194,8 +191,8 @@ void parse_return_type(const char *typeref, struct metadata *metadata) {
     return;
   }
 
-  char *tmp_name = reallocarray(NULL, sizeof(char *), MAX_TOKEN_LENGTH);
-  check_malloc(tmp_name);
+  char *tmp_name =
+      reallocarray_with_check(NULL, MAX_TOKEN_LENGTH, sizeof(char));
 
   snprintf(tmp_name, MAX_TOKEN_LENGTH, "%s %s", modifier, name);
   metadata->return_type.name = tmp_name;
@@ -210,8 +207,7 @@ void parse_parameters(const char *parameters, struct metadata *metadata) {
   }
 
   size_t sign_length = strnlen(parameters, MAX_PARAMS_LENGTH);
-  char *raw = reallocarray(NULL, sizeof(char *), sign_length);
-  check_malloc(raw);
+  char *raw = reallocarray_with_check(NULL, sign_length, sizeof(char));
 
   // substring of parameters, removing parenthesis
   size_t count = 0; // count is the number of parameters
@@ -225,8 +221,7 @@ void parse_parameters(const char *parameters, struct metadata *metadata) {
   count++;
 
   struct parameter *result =
-      reallocarray(NULL, sizeof(struct parameter), count);
-  check_malloc(result);
+      reallocarray_with_check(NULL, count, sizeof(struct parameter));
 
   size_t idx = 0;
   char *token = strtok(raw, DELIMITER);
@@ -247,13 +242,10 @@ void parse_parameters(const char *parameters, struct metadata *metadata) {
       }
     }
 
-    char *name = reallocarray(
-        NULL, sizeof(char *),
-        token_length -
-            whitespace_loc); // TODO: might return null for variadic params
-    check_malloc(name);
-    char *type = reallocarray(NULL, sizeof(char *), whitespace_loc + 1);
-    check_malloc(type);
+    char *name = reallocarray_with_check(NULL, token_length - whitespace_loc,
+                                         sizeof(char));
+    char *type =
+        reallocarray_with_check(NULL, whitespace_loc + 1, sizeof(char));
 
     strncpy(name, token + whitespace_loc + 1, token_length - whitespace_loc);
     strncpy(type, token, whitespace_loc);

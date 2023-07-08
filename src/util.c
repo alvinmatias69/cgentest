@@ -4,12 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 
-void check_malloc(void *ptr) {
-  if (ptr == NULL) {
-    throw("error while allocating memory.\n");
-  }
-}
-
 char *read_file(char *path) {
   FILE *f = fopen(path, "r");
 
@@ -17,8 +11,7 @@ char *read_file(char *path) {
   long filesize = ftell(f);
   fseek(f, 0, SEEK_SET);
 
-  char *data = malloc(filesize + 1);
-  check_malloc(data);
+  char *data = reallocarray_with_check(NULL, filesize + 1, sizeof(char));
   fread(data, filesize, 1, f);
   fclose(f);
 
@@ -80,4 +73,12 @@ void throwf(const char *fmt, ...) {
   vprint_log(fmt, args, ERROR_LEVEL);
   va_end(args);
   exit(1);
+}
+
+void *reallocarray_with_check(void *ptr, size_t nmemb, size_t size) {
+  void *result = reallocarray(ptr, nmemb, size);
+  if (result == NULL)
+    throw("error while allocating memory.\n");
+
+  return result;
 }

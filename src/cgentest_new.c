@@ -79,32 +79,33 @@ void generate_test(struct arguments *args) {
 
 char *get_template(struct arguments *args) {
   if (args->custom_template) {
-    if (access(args->template_file, F_OK) != 0) {
+    if (access(args->template_file, F_OK) != 0)
       throwf("Unable to find custom template file in: %s\n",
              args->template_file);
-    }
+
     return read_file(args->template_file);
-  } else if (access(INSTALLED_TEMPLATE_PATH, F_OK) == 0) {
-    return read_file(INSTALLED_TEMPLATE_PATH);
-  } else if (access(LOCAL_TEMPLATE_PATH, F_OK) == 0) {
-    return read_file(LOCAL_TEMPLATE_PATH);
-  } else {
-    throw("Unable to find any template\n");
   }
+
+  if (access(INSTALLED_TEMPLATE_PATH, F_OK) == 0)
+    return read_file(INSTALLED_TEMPLATE_PATH);
+
+  if (access(LOCAL_TEMPLATE_PATH, F_OK) == 0)
+    return read_file(LOCAL_TEMPLATE_PATH);
+
+  throw("Unable to find any template\n");
 }
 
 struct metadata_list *filter(struct metadata_list *source,
                              struct metadata_list *target) {
   struct metadata_list *result =
-      reallocarray(NULL, sizeof(struct metadata_list), 1);
-  check_malloc(result);
+      reallocarray_with_check(NULL, 1, sizeof(struct metadata_list));
   result->count = 0;
-  result->list = reallocarray(NULL, sizeof(struct metadata), source->count);
-  check_malloc(result->list);
+  result->list =
+      reallocarray_with_check(NULL, source->count, sizeof(struct metadata));
 
   for (size_t idx = 0; idx < source->count; idx++) {
-    char *name = reallocarray(NULL, sizeof(char), MAX_FUNCTION_NAME_LENGTH);
-    check_malloc(name);
+    char *name =
+        reallocarray_with_check(NULL, MAX_FUNCTION_NAME_LENGTH, sizeof(char));
     snprintf(name, MAX_FUNCTION_NAME_LENGTH, "%s_test", source->list[idx].name);
 
     if (name_in_list(target, name)) {
