@@ -15,6 +15,7 @@
 #define VOID_INDICATOR "void"
 #define VOID_PARAMETER "(void)"
 #define DELIMITER ","
+#define VARIADIC "..."
 
 void generate_tags(const char *source, bool has_custom_ctags_bin,
                    char *ctags_bin_path, tagFile **tags);
@@ -84,11 +85,9 @@ struct metadata_list *parse(struct parse_arguments *args) {
 void generate_tags(const char *source, bool has_custom_ctags_bin,
                    char *ctags_bin_path, tagFile **tags) {
   char command[MAX_COMMAND_LENGTH];
-  char *ctags_bin;
+  char *ctags_bin = DEFAULT_CTAGS_BIN;
   if (has_custom_ctags_bin) {
     ctags_bin = ctags_bin_path;
-  } else {
-    ctags_bin = DEFAULT_CTAGS_BIN;
   }
 
   char *target_name = reallocarray(NULL, sizeof(char *), MAX_FILENAME_LENGTH);
@@ -217,9 +216,9 @@ void parse_parameters(const char *parameters, struct metadata *metadata) {
   // substring of parameters, removing parenthesis
   size_t count = 0; // count is the number of parameters
   for (size_t idx = 0; idx < (sign_length - 2); idx++) {
-    if (parameters[idx + 1] == ',') {
+    if (parameters[idx + 1] == ',')
       count++;
-    }
+
     raw[idx] = parameters[idx + 1];
   }
   raw[sign_length - 2] = '\0';
@@ -235,6 +234,12 @@ void parse_parameters(const char *parameters, struct metadata *metadata) {
   size_t whitespace_loc;
 
   while (token) {
+    // stop the iteration on variadic param
+    if (strncmp(token, VARIADIC, MAX_PARAMS_LENGTH) == 0) {
+      count--; // reduce the count as we left out the variadic
+      break;
+    }
+
     token_length = strnlen(token, MAX_TOKEN_LENGTH);
     for (size_t token_idx = 0; token_idx < token_length; token_idx++) {
       if (token[token_idx] == ' ') {
