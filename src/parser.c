@@ -31,8 +31,10 @@ struct metadata_list *parse(struct parse_arguments *args) {
   result->count = 0;
 
   tagFile *tags;
+  log_info("start generating tags\n");
   generate_tags(args->input, args->has_custom_ctags_bin, args->ctags_bin_path,
                 &tags);
+  log_info("finish generating tags\n");
 
   tagEntry entry;
   tagResult tag_result = tagsFirst(tags, &entry);
@@ -69,7 +71,9 @@ struct metadata_list *parse(struct parse_arguments *args) {
       list = reallocarray_with_check(list, max, sizeof(struct metadata));
     }
 
+    log_infof("start parsing function: %s\n", entry.name);
     list[result->count++] = parse_single(&entry, args->name_only);
+    log_infof("finish parsing function: %s\n", entry.name);
     tag_result = tagsNext(tags, &entry);
   }
 
@@ -82,8 +86,10 @@ void generate_tags(const char *source, bool has_custom_ctags_bin,
                    char *ctags_bin_path, tagFile **tags) {
   char command[MAX_COMMAND_LENGTH];
   char *ctags_bin = DEFAULT_CTAGS_BIN;
-  if (has_custom_ctags_bin)
+  if (has_custom_ctags_bin) {
+    log_warnf("using custom ctags bin path: %s\n", ctags_bin_path);
     ctags_bin = ctags_bin_path;
+  }
 
   char *target_name =
       reallocarray_with_check(NULL, MAX_FILENAME_LENGTH, sizeof(char));

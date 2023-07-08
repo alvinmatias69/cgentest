@@ -26,12 +26,16 @@ void generate_test(struct arguments *args) {
       .name_only = false,
       .apply_filter = true,
   };
+  log_info("start parsing source metadata\n");
   struct metadata_list *source_metadata = parse(&parse_arguments);
+  log_info("finish parsing source metadata\n");
   if (source_metadata->count == 0) {
     log_warn("no function found, exiting.\n");
     free_metadata_list(source_metadata, false);
     exit(0);
   }
+  log_debug("source metadata:\n");
+  print_metadata_list(source_metadata);
 
   bool use_header = true;
   FILE *target = stdout;
@@ -44,7 +48,15 @@ void generate_test(struct arguments *args) {
         parse_arguments.name_only = true;
         parse_arguments.apply_filter = false;
         parse_arguments.input = args->target;
+
+        log_info("start parsing target metadata\n");
         target_metadata = parse(&parse_arguments);
+        log_info("finish parsing target metadata\n");
+        log_debug("target metadata:\n");
+        print_metadata_list(target_metadata);
+      } else {
+        log_warn("ignoring functions in target. Generated tests may contains "
+                 "duplicate.\n");
       }
     }
     target = fopen(args->target, "a");
@@ -54,7 +66,11 @@ void generate_test(struct arguments *args) {
 
   if (target_metadata != NULL) {
     if (target_metadata->count > 0) {
+      log_info("start filtering metadata\n");
       result = filter(source_metadata, target_metadata);
+      log_info("finish filtering metadata\n");
+      log_debug("metadata after filter:\n");
+      print_metadata_list(result);
     }
 
     free_metadata_list(target_metadata, true);
@@ -69,7 +85,9 @@ void generate_test(struct arguments *args) {
       .use_header = use_header,
       .source = args->input,
   };
+  log_info("start writing result\n");
   write_result(&write_arguments);
+  log_info("finish writing result\n");
 
   free(template);
   free_metadata_list(result, true);
@@ -107,7 +125,7 @@ struct metadata_list *filter(struct metadata_list *source,
     snprintf(name, MAX_FUNCTION_NAME_LENGTH, "%s_test", source->list[idx].name);
 
     if (name_in_list(target, name)) {
-      log_debugf("function %s already present in target. Skipping...\n", name);
+      log_infof("function %s already present in target. Skipping...\n", name);
       free_metadata(&source->list[idx]);
       free(name);
       continue;

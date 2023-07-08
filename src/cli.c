@@ -1,6 +1,7 @@
 #include "cli.h"
 #include "config.h"
 #include "local_limit.h"
+#include "util.h"
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,16 +120,22 @@ void free_args(struct arguments *args) {
 // TODO: pretty this up
 void print_args(struct arguments *args) {
   log_debug("Argument list:\n");
-  log_debugf(" input file: \t\t%s\n", args->input);
-  log_debugf(" target file: \t\t%s\n", args->target);
-  log_debugf(" is custom target: \t%d\n", args->custom_target);
-  log_debugf(" template file: \t\t%s\n", args->template_file);
-  log_debugf(" is custom template: \t%d\n", args->custom_template);
-  log_debugf(" only: \t%s\n", args->only);
-  log_debugf(" has only: \t%d\n", args->has_only);
-  log_debugf(" exclude: \t%s\n", args->exclude);
-  log_debugf(" has exclude: \t%d\n", args->has_exclude);
-  log_debugf(" log level: \t%d\n", args->log_level);
+  log_debugf("  input file           : %s\n", args->input);
+  log_debugf("  use custom target    : %s\n", bool_to_str(args->custom_target));
+  log_debugf("  target file          : %s\n", args->target);
+  log_debugf("  use custom template  : %s\n",
+             bool_to_str(args->custom_template));
+  log_debugf("  template file        : %s\n", args->template_file);
+  log_debugf("  has 'only' filter    : %s\n", bool_to_str(args->has_only));
+  log_debugf("  'only' filter        : %s\n", args->only);
+  log_debugf("  has 'exclude' filter : %s\n", bool_to_str(args->has_exclude));
+  log_debugf("  'exclude' filter     : %s\n", args->exclude);
+  log_debugf("  use custom ctags path: %s\n",
+             bool_to_str(args->has_custom_ctags_bin));
+  log_debugf("  custom ctags path    : %s\n", args->ctags_bin_path);
+  log_debugf("  force generate       : %s\n",
+             bool_to_str(args->ignore_target_current));
+  log_debugf("  log level            : %s\n", log_lvl_to_str(args->log_level));
 }
 
 // TODO: add remaining args

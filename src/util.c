@@ -1,6 +1,5 @@
 #include "util.h"
 #include "local_limit.h"
-#include "logger.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -55,10 +54,23 @@ void free_metadata(struct metadata *metadata) {
 }
 
 void print_metadata_list(struct metadata_list *list) {
-  log_infof("count: %d\n", list->count);
+  log_debug("Metadata properties\n");
+  log_debugf("count: %d\n", list->count);
 
   for (size_t idx = 0; idx < list->count; idx++) {
-    log_infof("name: %s\n", list->list[idx].name);
+    struct metadata current = list->list[idx];
+    log_debugf("name                  : %s\n", current.name);
+    log_debugf("return type           : %s\n", current.return_type.name);
+    log_debugf("return primitive type?: %s\n",
+               bool_to_str(current.return_type.is_primitive));
+    log_debugf("void func?            : %s\n",
+               bool_to_str(current.return_type.is_void));
+    log_debugf("parameter count       : %d\n", current.parameter_count);
+    log_debug("parameters             :\n");
+    for (size_t inner = 0; inner < current.parameter_count; inner++) {
+      log_debugf("  name : %s\n", current.params[inner].name);
+      log_debugf("  type : %s\n", current.params[inner].type);
+    }
   }
 }
 
@@ -81,4 +93,19 @@ void *reallocarray_with_check(void *ptr, size_t nmemb, size_t size) {
     throw("error while allocating memory.\n");
 
   return result;
+}
+
+inline char *bool_to_str(bool var) { return var ? "true" : "false"; }
+
+inline char *log_lvl_to_str(enum log_level level) {
+  switch (level) {
+  case ERROR_LEVEL:
+    return "error";
+  case WARN_LEVEL:
+    return "warn";
+  case INFO_LEVEL:
+    return "info";
+  case DEBUG_LEVEL:
+    return "debug";
+  }
 }
