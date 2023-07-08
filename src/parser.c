@@ -38,9 +38,8 @@ struct metadata_list *parse(struct parse_arguments *args) {
   tagResult tag_result = tagsFirst(tags, &entry);
 
   if (tag_result != TagSuccess) {
-    log_errorf("error while opening tags\n");
     tagsClose(tags);
-    return result;
+    throwf("error while opening tags for: %s\n", args->input);
   }
 
   regex_t only_regex;
@@ -83,9 +82,8 @@ void generate_tags(const char *source, bool has_custom_ctags_bin,
                    char *ctags_bin_path, tagFile **tags) {
   char command[MAX_COMMAND_LENGTH];
   char *ctags_bin = DEFAULT_CTAGS_BIN;
-  if (has_custom_ctags_bin) {
+  if (has_custom_ctags_bin)
     ctags_bin = ctags_bin_path;
-  }
 
   char *target_name =
       reallocarray_with_check(NULL, MAX_FILENAME_LENGTH, sizeof(char));
@@ -99,22 +97,17 @@ void generate_tags(const char *source, bool has_custom_ctags_bin,
   log_debugf("ctags generate command: %s\n", command);
 
   FILE *fp = popen(command, "w");
-  if (fp == NULL) {
-    log_error("unable to generate ctags\n");
-    exit(1);
-  }
+  if (fp == NULL)
+    throw("unable to generate ctags\n");
+
   pclose(fp);
 
   tagFileInfo info;
   *tags = tagsOpen(target_name, &info);
   log_debug("finish open tag\n");
-  if (tags == NULL) {
-    log_errorf("unable to read tags. Error number %d\n",
-               info.status.error_number);
-    exit(1);
-  }
+  if (tags == NULL)
+    throwf("unable to read tags. Error number %d\n", info.status.error_number);
 
-  log_debug("finish generate tags\n");
   remove(target_name);
   free(target_name);
 }
@@ -124,10 +117,8 @@ void compile_regex(bool enabled, char *pattern, regex_t *regex) {
     return;
 
   int result = regcomp(regex, pattern, 0);
-  if (result != 0) {
-    log_errorf("failure to compile regex: \"%s\"\n", pattern);
-    exit(1);
-  }
+  if (result != 0)
+    throwf("failure to compile regex: \"%s\"\n", pattern);
 }
 
 bool regex_match(const char *string, regex_t *regex, char *pattern) {
@@ -136,15 +127,16 @@ bool regex_match(const char *string, regex_t *regex, char *pattern) {
   if (result == 0) {
     log_debugf("function \"%s\" match pattern \"%s\".\n", string, pattern);
     return true;
-  } else if (result == REG_NOMATCH) {
+  }
+
+  if (result == REG_NOMATCH) {
     log_debugf("function \"%s\" doesn't match pattern \"%s\".\n", string,
                pattern);
     return false;
-  } else { // handle regex execute error
-    log_errorf("error while executing regex pattern \"%s\" for \"%s\"\n",
-               pattern, string);
-    exit(1);
   }
+
+  throwf("error while executing regex pattern \"%s\" for \"%s\"\n", pattern,
+         string);
 }
 
 struct metadata parse_single(tagEntry *entry, bool name_only) {
@@ -172,10 +164,9 @@ struct metadata parse_single(tagEntry *entry, bool name_only) {
 void parse_return_type(const char *typeref, struct metadata *metadata) {
   size_t typeref_length = strnlen(typeref, MAX_FUNCTION_TYPE_LENGTH);
   size_t pos = 0;
-  for (size_t idx = 0; idx < typeref_length; idx++) {
+  for (size_t idx = 0; idx < typeref_length; idx++)
     if (typeref[idx] == ':')
       pos = idx;
-  }
 
   char *modifier = strndup(typeref, pos);
   metadata->return_type.is_primitive =
@@ -202,9 +193,8 @@ void parse_return_type(const char *typeref, struct metadata *metadata) {
 
 void parse_parameters(const char *parameters, struct metadata *metadata) {
   // ignore parameters for void (e.g. int example(void))
-  if (strncmp(parameters, VOID_PARAMETER, MAX_PARAMS_LENGTH) == 0) {
+  if (strncmp(parameters, VOID_PARAMETER, MAX_PARAMS_LENGTH) == 0)
     return;
-  }
 
   size_t sign_length = strnlen(parameters, MAX_PARAMS_LENGTH);
   char *raw = reallocarray_with_check(NULL, sign_length, sizeof(char));
@@ -236,11 +226,9 @@ void parse_parameters(const char *parameters, struct metadata *metadata) {
     }
 
     token_length = strnlen(token, MAX_TOKEN_LENGTH);
-    for (size_t token_idx = 0; token_idx < token_length; token_idx++) {
-      if (token[token_idx] == ' ') {
+    for (size_t token_idx = 0; token_idx < token_length; token_idx++)
+      if (token[token_idx] == ' ')
         whitespace_loc = token_idx;
-      }
-    }
 
     char *name = reallocarray_with_check(NULL, token_length - whitespace_loc,
                                          sizeof(char));

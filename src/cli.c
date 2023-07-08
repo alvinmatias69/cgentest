@@ -102,6 +102,7 @@ struct arguments parse_args(int argc, char *argv[]) {
   return args;
 }
 
+// TODO: free remaining args
 void free_args(struct arguments *args) {
   if (strnlen(args->input, MAX_INPUT_LENGTH) > 0)
     free(args->input);
@@ -115,20 +116,22 @@ void free_args(struct arguments *args) {
     free(args->template_file);
 }
 
+// TODO: pretty this up
 void print_args(struct arguments *args) {
   log_debug("Argument list:\n");
-  log_debugf("\tinput file: %s\n", args->input);
-  log_debugf("\ttarget file: %s\n", args->target);
-  log_debugf("\tis custom target: %d\n", args->custom_target);
-  log_debugf("\ttemplate file: %s\n", args->template_file);
-  log_debugf("\tis custom template: %d\n", args->custom_template);
-  log_debugf("\tonly: %s\n", args->only);
-  log_debugf("\thas only: %d\n", args->has_only);
-  log_debugf("\texclude: %s\n", args->exclude);
-  log_debugf("\thas exclude: %d\n", args->has_exclude);
-  log_debugf("\tlog level: %d\n", args->log_level);
+  log_debugf(" input file: \t\t%s\n", args->input);
+  log_debugf(" target file: \t\t%s\n", args->target);
+  log_debugf(" is custom target: \t%d\n", args->custom_target);
+  log_debugf(" template file: \t\t%s\n", args->template_file);
+  log_debugf(" is custom template: \t%d\n", args->custom_template);
+  log_debugf(" only: \t%s\n", args->only);
+  log_debugf(" has only: \t%d\n", args->has_only);
+  log_debugf(" exclude: \t%s\n", args->exclude);
+  log_debugf(" has exclude: \t%d\n", args->has_exclude);
+  log_debugf(" log level: \t%d\n", args->log_level);
 }
 
+// TODO: add remaining args
 void print_help(void) {
   printf(
       "%s\n"
@@ -159,6 +162,7 @@ void print_version(void) { printf("%s\n", PACKAGE_STRING); }
 void validate_args(struct required_args *req, struct arguments *args) {
   if (!req->input) {
     printf("input file is required\n");
+    print_help();
     exit(1);
   }
 }
