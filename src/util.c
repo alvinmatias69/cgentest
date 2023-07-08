@@ -2,7 +2,6 @@
 #include "local_limit.h"
 #include "logger.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 void check_malloc(void *ptr) {

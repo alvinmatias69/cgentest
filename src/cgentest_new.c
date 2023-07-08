@@ -52,21 +52,17 @@ void generate_test(struct arguments *args) {
     target = fopen(args->target, "a");
   }
 
-  struct metadata_list *result;
+  struct metadata_list *result = source_metadata;
 
   if (target_metadata != NULL) {
     if (target_metadata->count > 0) {
       result = filter(source_metadata, target_metadata);
-    } else {
-      result = source_metadata;
     }
 
     free_metadata_list(target_metadata, true);
   }
 
   char *template = get_template(args);
-
-  print_metadata_list(result);
 
   struct write_result_params write_arguments = {
       .metadata_list = result,

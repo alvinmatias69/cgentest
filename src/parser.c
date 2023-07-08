@@ -77,7 +77,6 @@ struct metadata_list *parse(struct parse_arguments *args) {
 
   tagsClose(tags);
   result->list = list;
-  print_metadata_list(result);
   return result;
 }
 
@@ -222,7 +221,7 @@ void parse_parameters(const char *parameters, struct metadata *metadata) {
     }
     raw[idx] = parameters[idx + 1];
   }
-  raw[sign_length - 1] = '\0';
+  raw[sign_length - 2] = '\0';
   count++;
 
   struct parameter *result =
