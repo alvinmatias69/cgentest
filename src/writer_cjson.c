@@ -9,6 +9,7 @@
 cJSON *map_json(struct write_result_params *params);
 
 void write_result(struct write_result_params *params) {
+  log_debug("start writing result using cjson\n");
   log_info("start mapping to json\n");
   cJSON *metadata_json = map_json(params);
   log_info("finish mapping to json\n");
@@ -22,7 +23,7 @@ void write_result(struct write_result_params *params) {
     throwf("error while writing result: %s\n", strerror(errno));
 
   log_debug("finish writing result to target\n");
-  cJSON_Delete(metadata_json);
+  cJSON_Delete(metadata_json); // free the json root object
 }
 
 cJSON *map_json(struct write_result_params *params) {

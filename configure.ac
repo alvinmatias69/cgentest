@@ -41,6 +41,21 @@ if test "x${have_cjson}" = xno; then
    ------------------------------------------])
 fi
 
+have_jsonc=no
+AC_SEARCH_LIBS([json_object_new_object], [json-c], [have_jsonc=yes])
+
+if test "x${have_jsonc}" = xyes; then
+   AC_CHECK_HEADERS([json-c/json_object.h], [], [have_jsonc=no])
+fi
+
+if test "x${have_jsonc}" = xno; then
+   AC_MSG_ERROR([
+   The json-c library and header files are
+   required to build cgentest. Stopping...
+   Check 'config.log' for more information.
+   ------------------------------------------])
+fi
+
 have_mustach=no
 AC_SEARCH_LIBS([mustach_cJSON_file], [mustach], [have_mustach=yes])
 
@@ -49,6 +64,21 @@ if test "x${have_mustach}" = xyes; then
 fi
 
 if test "x${have_mustach}" = xno; then
+   AC_MSG_ERROR([
+   The mustach library and header files are
+   required to build cgentest. Stopping...
+   Check 'config.log' for more information.
+   ------------------------------------------])
+fi
+
+have_mustach_jsonc=no
+AC_SEARCH_LIBS([mustach_json_c_file], [mustach], [have_mustach_jsonc=yes])
+
+if test "x${have_mustach}" = xyes; then
+   AC_CHECK_HEADERS([mustach/mustach-json-c.h], [], [have_mustach_jsonc=no])
+fi
+
+if test "x${have_mustach_jsonc=no}" = xno; then
    AC_MSG_ERROR([
    The mustach library and header files are
    required to build cgentest. Stopping...
