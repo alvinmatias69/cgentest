@@ -56,6 +56,21 @@ if test "x${have_jsonc}" = xno; then
    ------------------------------------------])
 fi
 
+have_jansson=no
+AC_SEARCH_LIBS([json_object], [jansson], [have_jansson=yes])
+
+if test "x${have_jansson}" = xyes; then
+   AC_CHECK_HEADERS([jansson.h], [], [have_jansson=no])
+fi
+
+if test "x${have_jansson}" = xno; then
+   AC_MSG_ERROR([
+   The jansson library and header files are
+   required to build cgentest. Stopping...
+   Check 'config.log' for more information.
+   ------------------------------------------])
+fi
+
 have_mustach=no
 AC_SEARCH_LIBS([mustach_cJSON_file], [mustach], [have_mustach=yes])
 
@@ -74,11 +89,26 @@ fi
 have_mustach_jsonc=no
 AC_SEARCH_LIBS([mustach_json_c_file], [mustach], [have_mustach_jsonc=yes])
 
-if test "x${have_mustach}" = xyes; then
+if test "x${have_mustach_jsonc}" = xyes; then
    AC_CHECK_HEADERS([mustach/mustach-json-c.h], [], [have_mustach_jsonc=no])
 fi
 
 if test "x${have_mustach_jsonc=no}" = xno; then
+   AC_MSG_ERROR([
+   The mustach library and header files are
+   required to build cgentest. Stopping...
+   Check 'config.log' for more information.
+   ------------------------------------------])
+fi
+
+have_mustach_jansson=no
+AC_SEARCH_LIBS([mustach_jansson_file], [mustach], [have_mustach_jansson=yes])
+
+if test "x${have_mustach_jansson}" = xyes; then
+   AC_CHECK_HEADERS([mustach/mustach-jansson.h], [], [have_mustach_jansson=no])
+fi
+
+if test "x${have_mustach_jansson=no}" = xno; then
    AC_MSG_ERROR([
    The mustach library and header files are
    required to build cgentest. Stopping...

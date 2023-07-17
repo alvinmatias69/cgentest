@@ -9,7 +9,7 @@
 json_object *map_json(struct write_result_params *params);
 
 void write_result(struct write_result_params *params) {
-  log_debug("start writing result using json-c\n");
+  log_warn("start writing result using json-c\n");
   log_info("start mapping to json\n");
   json_object *metadata_json = map_json(params);
   log_info("finish mapping to json\n");
