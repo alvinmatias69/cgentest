@@ -14,7 +14,7 @@ void throw(const char *msg);
 void throwf(const char *fmt, ...);
 void *reallocarray_with_check(void *ptr, size_t nmemb, size_t size);
 void print_metadata_list(struct metadata_list *list);
-char *bool_to_str(bool var);
-char *log_lvl_to_str(enum log_level level);
+char *strbool(bool var);
+char *strloglvl(enum log_level level);
 
 #endif // UTIL_H_

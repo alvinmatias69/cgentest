@@ -3,7 +3,9 @@
 #include "parser.h"
 #include "util.h"
 #include "writer.h"
+#include <errno.h>
 #include <stdbool.h>
+#include <string.h>
 #include <unistd.h>
 
 char *get_template(struct arguments *args);
@@ -60,6 +62,8 @@ void generate_test(struct arguments *args) {
       }
     }
     target = fopen(args->target, "a");
+    if (target == NULL)
+      throwf("error while opening %s: %s\n", args->target, strerror(errno));
   }
 
   struct metadata_list *result = source_metadata;

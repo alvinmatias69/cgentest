@@ -1,10 +1,13 @@
 #include "util.h"
 #include "local_limit.h"
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
 char *read_file(char *path) {
   FILE *f = fopen(path, "r");
+  if (f == NULL)
+    throwf("error while opening %s: %s\n", path, strerror(errno));
 
   fseek(f, 0, SEEK_END);
   long filesize = ftell(f);
@@ -20,10 +23,9 @@ char *read_file(char *path) {
 }
 
 bool name_in_list(struct metadata_list *list, char *query) {
-  for (size_t idx = 0; idx < list->count; idx++) {
+  for (size_t idx = 0; idx < list->count; idx++)
     if (strncmp(query, list->list[idx].name, MAX_FUNCTION_NAME_LENGTH) == 0)
       return true;
-  }
 
   return false;
 }
@@ -62,9 +64,9 @@ void print_metadata_list(struct metadata_list *list) {
     log_debugf("name                  : %s\n", current.name);
     log_debugf("return type           : %s\n", current.return_type.name);
     log_debugf("return primitive type?: %s\n",
-               bool_to_str(current.return_type.is_primitive));
+               strbool(current.return_type.is_primitive));
     log_debugf("void func?            : %s\n",
-               bool_to_str(current.return_type.is_void));
+               strbool(current.return_type.is_void));
     log_debugf("parameter count       : %d\n", current.parameter_count);
     log_debug("parameters             :\n");
     for (size_t inner = 0; inner < current.parameter_count; inner++) {
@@ -95,9 +97,9 @@ void *reallocarray_with_check(void *ptr, size_t nmemb, size_t size) {
   return result;
 }
 
-inline char *bool_to_str(bool var) { return var ? "true" : "false"; }
+inline char *strbool(bool var) { return var ? "true" : "false"; }
 
-inline char *log_lvl_to_str(enum log_level level) {
+inline char *strloglvl(enum log_level level) {
   switch (level) {
   case ERROR_LEVEL:
     return "error";

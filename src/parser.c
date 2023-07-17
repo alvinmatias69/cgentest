@@ -2,6 +2,7 @@
 #include "local_limit.h"
 #include "logger.h"
 #include "util.h"
+#include <errno.h>
 #include <readtags.h>
 #include <regex.h>
 #include <string.h>
@@ -104,7 +105,7 @@ void generate_tags(const char *source, bool has_custom_ctags_bin,
 
   FILE *fp = popen(command, "w");
   if (fp == NULL)
-    throw("unable to generate ctags\n");
+    throwf("error while generating ctags: %s\n", strerror(errno));
 
   pclose(fp);
 
