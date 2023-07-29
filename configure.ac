@@ -12,109 +12,139 @@ AC_PROG_CC
 
 # Checks for libraries.
 have_readtags=no
-AC_SEARCH_LIBS([tagsFind], [readtags], [have_readtags=yes])
+AC_CHECK_HEADERS([readtags.h], [have_readtags=yes])
 
-if test "x${have_readtags}" = xyes; then
-   AC_CHECK_HEADERS([readtags.h], [], [have_readtagss=no])
-fi
+AS_IF([test "x${have_readtags}" = "xyes"],
+         [AC_SEARCH_LIBS([tagsFind], [readtags], [], [have_readtags=no])])
 
-if test "x${have_readtags}" = xno; then
-   AC_MSG_ERROR([
+AS_IF([test "x${have_readtags}" = "xno"],
+         [AC_MSG_ERROR([
    The readtags library and header files are
    required to build cgentest. Stopping...
    Check 'config.log' for more information.
-   ------------------------------------------])
+   ------------------------------------------])])
+
+# check user input
+no_preference=yes
+use_jsonc=no
+AC_ARG_WITH([jsonc],
+   [AS_HELP_STRING([--with-jsonc],
+      [use json-c for json library @<:@default=no@:>@])],
+      [use_jsonc=yes]
+      [no_preference=no])
+if test "x${use_jsonc}" = xyes; then
+   AC_MSG_NOTICE([
+   Using json-c as json library])
 fi
 
-have_cjson=no
-AC_SEARCH_LIBS([cJSON_CreateObject], [cjson], [have_cjson=yes])
-
-if test "x${have_cjson}" = xyes; then
-   AC_CHECK_HEADERS([cjson/cJSON.h], [], [have_cjson=no])
+use_cjson=no
+AC_ARG_WITH([cjson],
+   [AS_HELP_STRING([--with-cjson],
+      [use cjson for json library @<:@default=no@:>@])],
+      [use_cjson=yes]
+      [no_preference=no])
+if test "x${use_cjson}" = xyes; then
+   AC_MSG_NOTICE([
+   Using cjson as json library])
 fi
 
-if test "x${have_cjson}" = xno; then
-   AC_MSG_ERROR([
-   The cJSON library and header files are
-   required to build cgentest. Stopping...
-   Check 'config.log' for more information.
-   ------------------------------------------])
+use_jansson=no
+AC_ARG_WITH([jansson],
+   [AS_HELP_STRING([--with-jansson],
+      [use jansson for json library @<:@default=no@:>@])],
+      [use_jansson=yes]
+      [no_preference=no])
+if test "x${use_jansson}" = xyes; then
+   AC_MSG_NOTICE([
+   Using jansson as json library])
 fi
+
+if test "x${no_preference}" = xyes; then
+   AC_MSG_NOTICE([
+   User doesn't give json library preference.
+   Will check for installed library.])
+fi
+
+lib_set=no
+
+# check jsonc availability and link if available
+have_mustach_jsonc=no
+AS_IF([test "x${lib_set}" = "xyes"],
+         [AC_MSG_NOTICE([libraries already set, skipping jsonc check])],
+      [test "x${use_jsonc}" = "xyes" -o "x${no_preference}" = "xyes"],
+         [AC_CHECK_HEADER([mustach/mustach-json-c.h], [have_mustach_json_c=yes])])
+
+AS_IF([test "x${have_mustach_jsonc}" = "xyes"],
+         [AC_SEARCH_LIBS([mustach_json_c_file], [mustach], [], [have_mustach_jsonc=no])])
 
 have_jsonc=no
-AC_SEARCH_LIBS([json_object_new_object], [json-c], [have_jsonc=yes])
+AS_IF([test "x${have_mustach_jsonc}" = "xyes"],
+         [AC_CHECK_HEADER([json-c/json_object.h], [have_jsonc=yes])])
 
-if test "x${have_jsonc}" = xyes; then
-   AC_CHECK_HEADERS([json-c/json_object.h], [], [have_jsonc=no])
-fi
+AS_IF([test "x${have_jsonc=}" = "xyes"],
+         [AC_SEARCH_LIBS([json_object_new_object], [json-c], [], [have_jsonc=no])])
 
-if test "x${have_jsonc}" = xno; then
-   AC_MSG_ERROR([
-   The json-c library and header files are
-   required to build cgentest. Stopping...
-   Check 'config.log' for more information.
-   ------------------------------------------])
-fi
+AS_IF([test "x${have_jsonc}" = "xyes"],
+         [lib_set=yes],
+      [test "x${use_jsonc}" = "xyes"],
+         [AC_MSG_WARN([json-c library not found])])
+
+# check cjson availability and link if available
+have_mustach_cjson=no
+AS_IF([test "x${lib_set}" = "xyes"],
+         [AC_MSG_NOTICE([libraries already set, skipping cjson check])],
+      [test "x${use_cjson}" = "xyes" -o "x${no_preference}" = "xyes"],
+         [AC_CHECK_HEADER([mustach/mustach-cjson.h], [have_mustach_cjson=yes])])
+
+AS_IF([test "x${have_mustach_cjson}" = "xyes"],
+         [AC_SEARCH_LIBS([mustach_cJSON_file], [mustach], [], [have_mustach_cjson=no])])
+
+have_cjson=no
+AS_IF([test "x${have_mustach_cjson}" = "xyes"],
+         [AC_CHECK_HEADER([cjson/cJSON.h], [have_cjson=yes])])
+
+AS_IF([test "x${have_cjson=}" = "xyes"],
+         [AC_SEARCH_LIBS([cJSON_CreateObject], [cjson], [], [have_cjson=no])])
+
+AS_IF([test "x${have_cjson}" = "xyes"],
+         [lib_set=yes],
+      [test "x${use_cjson}" = "xyes"],
+         [AC_MSG_WARN([cjson library not found])])
+
+# check jansson availability and link if available
+have_mustach_jansson=no
+AS_IF([test "x${lib_set}" = "xyes"],
+         [AC_MSG_NOTICE([libraries already set, skipping jansson check])],
+      [test "x${use_jansson}" = "xyes" -o "x${no_preference}" = "xyes"],
+         [AC_CHECK_HEADER([mustach/mustach-jansson.h], [have_mustach_jansson=yes])])
+
+AS_IF([test "x${have_mustach_jansson}" = "xyes"],
+         [AC_SEARCH_LIBS([mustach_jansson_file], [mustach], [], [have_mustach_jansson=no])])
 
 have_jansson=no
-AC_SEARCH_LIBS([json_object], [jansson], [have_jansson=yes])
+AS_IF([test "x${have_mustach_jansson}" = "xyes"],
+         [AC_CHECK_HEADER([jansson.h], [have_jansson=yes])])
 
-if test "x${have_jansson}" = xyes; then
-   AC_CHECK_HEADERS([jansson.h], [], [have_jansson=no])
-fi
+AS_IF([test "x${have_jansson=}" = "xyes"],
+         [AC_SEARCH_LIBS([json_object], [jansson], [], [have_jansson=no])])
 
-if test "x${have_jansson}" = xno; then
-   AC_MSG_ERROR([
-   The jansson library and header files are
-   required to build cgentest. Stopping...
+AS_IF([test "x${have_jansson}" = "xyes"],
+         [lib_set=yes],
+      [test "x${use_jansson}" = "xyes"],
+         [AC_MSG_WARN([jansson library not found])])
+
+# check if any lib are set
+AS_IF([test "x${lib_set}" = "xno"],
+         [AC_MSG_ERROR([
+   To build cgentest, the presence of at least
+   one JSON library (json-c, cjson, jansson) and
+   its associated header files is required. Stopping...
    Check 'config.log' for more information.
-   ------------------------------------------])
-fi
+   ------------------------------------------])])
 
-have_mustach=no
-AC_SEARCH_LIBS([mustach_cJSON_file], [mustach], [have_mustach=yes])
-
-if test "x${have_mustach}" = xyes; then
-   AC_CHECK_HEADERS([mustach/mustach-cjson.h], [], [have_mustach=no])
-fi
-
-if test "x${have_mustach}" = xno; then
-   AC_MSG_ERROR([
-   The mustach library and header files are
-   required to build cgentest. Stopping...
-   Check 'config.log' for more information.
-   ------------------------------------------])
-fi
-
-have_mustach_jsonc=no
-AC_SEARCH_LIBS([mustach_json_c_file], [mustach], [have_mustach_jsonc=yes])
-
-if test "x${have_mustach_jsonc}" = xyes; then
-   AC_CHECK_HEADERS([mustach/mustach-json-c.h], [], [have_mustach_jsonc=no])
-fi
-
-if test "x${have_mustach_jsonc=no}" = xno; then
-   AC_MSG_ERROR([
-   The mustach library and header files are
-   required to build cgentest. Stopping...
-   Check 'config.log' for more information.
-   ------------------------------------------])
-fi
-
-have_mustach_jansson=no
-AC_SEARCH_LIBS([mustach_jansson_file], [mustach], [have_mustach_jansson=yes])
-
-if test "x${have_mustach_jansson}" = xyes; then
-   AC_CHECK_HEADERS([mustach/mustach-jansson.h], [], [have_mustach_jansson=no])
-fi
-
-if test "x${have_mustach_jansson=no}" = xno; then
-   AC_MSG_ERROR([
-   The mustach library and header files are
-   required to build cgentest. Stopping...
-   Check 'config.log' for more information.
-   ------------------------------------------])
-fi
+AM_CONDITIONAL([USE_JSONC], [test "x${have_jsonc}" = "xyes"])
+AM_CONDITIONAL([USE_CJSON], [test "x${have_cjson}" = "xyes"])
+AM_CONDITIONAL([USE_JANSSON], [test "x${have_jansson}" = "xyes"])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
