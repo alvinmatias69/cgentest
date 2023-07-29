@@ -12,7 +12,7 @@ AC_PROG_CC
 
 # Checks for libraries.
 have_readtags=no
-AC_CHECK_HEADERS([readtags.h], [have_readtags=yes])
+AC_CHECK_HEADER([readtags.h], [have_readtags=yes])
 
 AS_IF([test "x${have_readtags}" = "xyes"],
          [AC_SEARCH_LIBS([tagsFind], [readtags], [], [have_readtags=no])])
@@ -72,7 +72,7 @@ have_mustach_jsonc=no
 AS_IF([test "x${lib_set}" = "xyes"],
          [AC_MSG_NOTICE([libraries already set, skipping jsonc check])],
       [test "x${use_jsonc}" = "xyes" -o "x${no_preference}" = "xyes"],
-         [AC_CHECK_HEADER([mustach/mustach-json-c.h], [have_mustach_json_c=yes])])
+         [AC_CHECK_HEADER([mustach/mustach-json-c.h], [have_mustach_jsonc=yes])])
 
 AS_IF([test "x${have_mustach_jsonc}" = "xyes"],
          [AC_SEARCH_LIBS([mustach_json_c_file], [mustach], [], [have_mustach_jsonc=no])])
