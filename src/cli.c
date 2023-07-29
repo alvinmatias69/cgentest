@@ -1,6 +1,7 @@
 #include "cli.h"
 #include "config.h"
 #include "local_limit.h"
+#include "util.h"
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,6 +26,7 @@ static struct option long_options[] = {
     {"template", optional_argument, NULL, 't'},
     {"exclude", optional_argument, NULL, 'e'},
     {"only", optional_argument, NULL, 'O'},
+    {"bin", optional_argument, NULL, 'b'},
     {NULL, 0, NULL, 0},
 };
 
@@ -41,12 +43,14 @@ struct arguments parse_args(int argc, char *argv[]) {
       .exclude = "",
       .has_exclude = false,
       .template_file = "",
-      .log_level = WARN,
+      .log_level = WARN_LEVEL,
+      .ctags_bin_path = "",
+      .has_custom_ctags_bin = false,
   };
   struct required_args req = {0};
 
   int verbosity = 0;
-  while ((opt = getopt_long(argc, argv, "Vvho:l:e:O:Ft:", long_options,
+  while ((opt = getopt_long(argc, argv, "Vvho:b:l:e:O:Ft:", long_options,
                             NULL)) != -1) {
     switch (opt) {
     case 'o':
@@ -79,6 +83,10 @@ struct arguments parse_args(int argc, char *argv[]) {
     case 'v':
       verbosity++;
       break;
+    case 'b':
+      args.has_custom_ctags_bin = true;
+      args.ctags_bin_path = strndup(optarg, MAX_INPUT_LENGTH);
+      break;
     }
   }
 
@@ -95,6 +103,7 @@ struct arguments parse_args(int argc, char *argv[]) {
   return args;
 }
 
+// TODO: free remaining args
 void free_args(struct arguments *args) {
   if (strnlen(args->input, MAX_INPUT_LENGTH) > 0)
     free(args->input);
@@ -108,20 +117,27 @@ void free_args(struct arguments *args) {
     free(args->template_file);
 }
 
+// TODO: pretty this up
 void print_args(struct arguments *args) {
   log_debug("Argument list:\n");
-  log_debugf("\tinput file: %s\n", args->input);
-  log_debugf("\ttarget file: %s\n", args->target);
-  log_debugf("\tis custom target: %d\n", args->custom_target);
-  log_debugf("\ttemplate file: %s\n", args->template_file);
-  log_debugf("\tis custom template: %d\n", args->custom_template);
-  log_debugf("\tonly: %s\n", args->only);
-  log_debugf("\thas only: %d\n", args->has_only);
-  log_debugf("\texclude: %s\n", args->exclude);
-  log_debugf("\thas exclude: %d\n", args->has_exclude);
-  log_debugf("\tlog level: %d\n", args->log_level);
+  log_debugf("  input file           : %s\n", args->input);
+  log_debugf("  use custom target    : %s\n", strbool(args->custom_target));
+  log_debugf("  target file          : %s\n", args->target);
+  log_debugf("  use custom template  : %s\n", strbool(args->custom_template));
+  log_debugf("  template file        : %s\n", args->template_file);
+  log_debugf("  has 'only' filter    : %s\n", strbool(args->has_only));
+  log_debugf("  'only' filter        : %s\n", args->only);
+  log_debugf("  has 'exclude' filter : %s\n", strbool(args->has_exclude));
+  log_debugf("  'exclude' filter     : %s\n", args->exclude);
+  log_debugf("  use custom ctags path: %s\n",
+             strbool(args->has_custom_ctags_bin));
+  log_debugf("  custom ctags path    : %s\n", args->ctags_bin_path);
+  log_debugf("  force generate       : %s\n",
+             strbool(args->ignore_target_current));
+  log_debugf("  log level            : %s\n", strloglvl(args->log_level));
 }
 
+// TODO: add remaining args
 void print_help(void) {
   printf(
       "%s\n"
@@ -152,6 +168,7 @@ void print_version(void) { printf("%s\n", PACKAGE_STRING); }
 void validate_args(struct required_args *req, struct arguments *args) {
   if (!req->input) {
     printf("input file is required\n");
+    print_help();
     exit(1);
   }
 }

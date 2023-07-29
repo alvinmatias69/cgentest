@@ -1,252 +1,147 @@
 #include "cgentest.h"
-#include "ctags_helper.h"
 #include "local_limit.h"
-#include "mapper.h"
+#include "parser.h"
 #include "util.h"
-#include <libgen.h>
-#include <mustach/mustach-cjson.h>
-#include <readtags.h>
-#include <regex.h>
+#include "writer.h"
+#include <errno.h>
+#include <stdbool.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 
-char *generate_target_file(struct arguments *args);
-void add_header_to_target(char *input, char *target, bool is_custom_target);
-size_t generate_proto(const char *source, struct function_prototype **protos,
-                      struct arguments *args, bool name_only, bool apply_regex);
+char *get_template(struct arguments *args);
+struct metadata_list *filter(struct metadata_list *source,
+                             struct metadata_list *target);
 
 void generate_test(struct arguments *args) {
-  if (access(args->input, F_OK) != 0) {
-    log_errorf("unable to find file: %s\n", args->input);
-    exit(1);
-  }
+  // check whether the input is available
+  if (access(args->input, F_OK) != 0)
+    throwf("unable to find file: %s\n", args->input);
 
-  struct function_prototype *protos =
-      malloc(sizeof(struct function_prototype) * FUNCTION_PROTO_BOUND);
-  check_malloc(protos);
-  size_t protos_count = generate_proto(args->input, &protos, args, false, true);
-
-  if (protos_count == 0) {
+  struct parse_arguments parse_arguments = {
+      .input = args->input,
+      .only = args->only,
+      .has_only = args->has_only,
+      .exclude = args->exclude,
+      .has_exclude = args->has_exclude,
+      .ctags_bin_path = args->ctags_bin_path,
+      .has_custom_ctags_bin = args->has_custom_ctags_bin,
+      .name_only = false,
+      .apply_filter = true,
+  };
+  log_info("start parsing source metadata\n");
+  struct metadata_list *source_metadata = parse(&parse_arguments);
+  log_info("finish parsing source metadata\n");
+  if (source_metadata->count == 0) {
     log_warn("no function found, exiting.\n");
-    free(protos);
+    free_metadata_list(source_metadata, false);
     exit(0);
   }
+  log_debug("source metadata:\n");
+  print_metadata_list(source_metadata);
 
-  // can be disabled for non custom target
-  char *target_file_name = generate_target_file(args);
-  log_debugf("target file: %s\n", target_file_name);
-
-  struct function_prototype *generated_protos = NULL;
-  size_t generated_protos_count = 0;
-  if (access(target_file_name, F_OK) == 0 && !args->ignore_target_current) {
-    generated_protos =
-        malloc(sizeof(struct function_prototype) * FUNCTION_PROTO_BOUND);
-    check_malloc(generated_protos);
-
-    generated_protos_count =
-        generate_proto(target_file_name, &generated_protos, args, true, false);
-  }
-
-  // can be optimized for non custom target
-  // handle multiple json lib
-  cJSON *root = map_json(&protos, protos_count, &generated_protos,
-                         generated_protos_count, args->custom_target);
-
-  char *template;
-  if (args->custom_template) {
-    if (access(args->template_file, F_OK) != 0) {
-      log_errorf("Unable to find custom template file in: %s\n",
-                 args->template_file);
-      exit(1);
-    }
-    template = read_file(args->template_file);
-  } else if (access(INSTALLED_TEMPLATE_PATH, F_OK) == 0) {
-    template = read_file(INSTALLED_TEMPLATE_PATH);
-  } else {
-    template = read_file(LOCAL_TEMPLATE_PATH);
-  } // handle if no default template found
-
-  add_header_to_target(args->input, target_file_name, args->custom_target);
-  FILE *target;
+  bool use_header = true;
+  FILE *target = stdout;
+  struct metadata_list *target_metadata = NULL;
   if (args->custom_target) {
-    target = fopen(target_file_name, "a");
-  } else {
-    target = stdout;
-  }
-  // handle multiple json lib
-  int write_result =
-      mustach_cJSON_file(template, 0, root, Mustach_With_AllExtensions, target);
+    if (access(args->target, F_OK) == 0) {
+      use_header = false;
+      if (!args->ignore_target_current) {
+        // change arguments for target only
+        parse_arguments.name_only = true;
+        parse_arguments.apply_filter = false;
+        parse_arguments.input = args->target;
 
-  if (!args->custom_target)
-    free(target_file_name);
+        log_info("start parsing target metadata\n");
+        target_metadata = parse(&parse_arguments);
+        log_info("finish parsing target metadata\n");
+        log_debug("target metadata:\n");
+        print_metadata_list(target_metadata);
+      } else {
+        log_warn("ignoring functions in target. Generated tests may contains "
+                 "duplicate.\n");
+      }
+    }
+    target = fopen(args->target, "a");
+    if (target == NULL)
+      throwf("error while opening %s: %s\n", args->target, strerror(errno));
+  }
+
+  struct metadata_list *result = source_metadata;
+
+  if (target_metadata != NULL) {
+    if (target_metadata->count > 0) {
+      log_info("start filtering metadata\n");
+      result = filter(source_metadata, target_metadata);
+      log_info("finish filtering metadata\n");
+      log_debug("metadata after filter:\n");
+      print_metadata_list(result);
+    }
+
+    free_metadata_list(target_metadata, true);
+  }
+
+  char *template = get_template(args);
+
+  struct write_result_params write_arguments = {
+      .metadata_list = result,
+      .target = target,
+      .template = template,
+      .use_header = use_header,
+      .source = args->input,
+  };
+  log_info("start writing result\n");
+  write_result(&write_arguments);
+  log_info("finish writing result\n");
 
   free(template);
+  free_metadata_list(result, true);
+
   if (args->custom_target)
     fclose(target);
-
-  // handle multiple json lib
-  cJSON_Delete(root);
-
-  for (size_t idx = 0; idx < generated_protos_count; idx++)
-    free_proto(&generated_protos[idx]);
-
-  if (generated_protos_count > 0)
-    free(generated_protos);
-
-  for (size_t idx = 0; idx < protos_count; idx++)
-    free_proto(&protos[idx]);
-
-  free(protos);
 }
 
-size_t generate_proto(const char *source, struct function_prototype **protos,
-                      struct arguments *args, bool name_only,
-                      bool apply_regex) {
-  char *tag_name = malloc(sizeof(char *) * MAX_FILENAME_LENGTH);
-  check_malloc(tag_name);
-  snprintf(tag_name, MAX_FILENAME_LENGTH, "%s/tags%lu", P_tmpdir, time(NULL));
-  log_debugf("tag file: %s\n", tag_name);
+char *get_template(struct arguments *args) {
+  if (args->custom_template) {
+    if (access(args->template_file, F_OK) != 0)
+      throwf("Unable to find custom template file in: %s\n",
+             args->template_file);
 
-  tagFile *tags;
-  generate_tags(source, tag_name, &tags);
-  log_debug("finish generate tags\n");
-  remove(tag_name);
-  free(tag_name);
-
-  size_t count = 0;
-  tagEntry entry;
-  tagResult result = tagsFirst(tags, &entry);
-
-  if (result != TagSuccess) {
-    tagsClose(tags);
-    return count;
+    return read_file(args->template_file);
   }
 
-  size_t max = FUNCTION_PROTO_BOUND;
+  if (access(INSTALLED_TEMPLATE_PATH, F_OK) == 0)
+    return read_file(INSTALLED_TEMPLATE_PATH);
 
-  regex_t only_regex;
-  regex_t excl_regex;
-  if (apply_regex) {
-    if (args->has_only) {
-      int result = regcomp(&only_regex, args->only, 0);
-      if (result != 0) {
-        log_errorf("failure to compile only regex: %s\n", args->only);
-        exit(1);
-      }
-    }
+  if (access(LOCAL_TEMPLATE_PATH, F_OK) == 0)
+    return read_file(LOCAL_TEMPLATE_PATH);
 
-    if (args->has_exclude) {
-      int result = regcomp(&excl_regex, args->exclude, 0);
-      if (result != 0) {
-        log_errorf("failure to compile exclude regex: %s\n", args->exclude);
-        exit(1);
-      }
-    }
-  }
-
-  while (result == TagSuccess) {
-    if (apply_regex) {
-      // generalize this if possible
-      if (args->has_exclude) {
-        int regex_result = regexec(&excl_regex, entry.name, 0, NULL, 0);
-        if (regex_result == 0) {
-          log_debugf("function \"%s\" match exclude pattern \"%s\". Skipping\n",
-                     entry.name, args->exclude);
-          result = tagsNext(tags, &entry);
-          continue;
-        } else if (regex_result == REG_NOMATCH) {
-          log_debug("function doesn't match exclude pattern. Continuing\n");
-        } else {
-          log_error("error while executing exclude regex\n");
-          exit(1);
-        }
-      }
-
-      if (args->has_only) {
-        int regex_result = regexec(&only_regex, entry.name, 0, NULL, 0);
-        if (regex_result == REG_NOMATCH) {
-          log_debugf(
-              "function \"%s\" doesn't match only pattern \"%s\". Skipping\n",
-              entry.name, args->only);
-          result = tagsNext(tags, &entry);
-          continue;
-        } else if (regex_result == 0) {
-          log_debug("function match only pattern. Continuing\n");
-        } else {
-          log_error("error while executing only regex\n");
-          exit(1);
-        }
-      }
-    }
-
-    if (count + 1 >= max) {
-      max += FUNCTION_PROTO_BOUND;
-      *protos = realloc(*protos, sizeof(struct function_prototype) * max);
-      check_malloc(protos);
-    }
-    (*protos)[count++] = map_proto(&entry, name_only);
-    result = tagsNext(tags, &entry);
-  }
-
-  tagsClose(tags);
-  return count;
+  throw("Unable to find any template\n");
 }
 
-// TODO: delete this as we default to stdout instead
-char *generate_target_file(struct arguments *args) {
-  if (args->custom_target) {
-    return args->target;
+struct metadata_list *filter(struct metadata_list *source,
+                             struct metadata_list *target) {
+  struct metadata_list *result =
+      reallocarray_with_check(NULL, 1, sizeof(struct metadata_list));
+  result->count = 0;
+  result->list =
+      reallocarray_with_check(NULL, source->count, sizeof(struct metadata));
+
+  for (size_t idx = 0; idx < source->count; idx++) {
+    char *name =
+        reallocarray_with_check(NULL, MAX_FUNCTION_NAME_LENGTH, sizeof(char));
+    snprintf(name, MAX_FUNCTION_NAME_LENGTH, "%s_test", source->list[idx].name);
+
+    if (name_in_list(target, name)) {
+      log_infof("function %s already present in target. Skipping...\n", name);
+      free_metadata(&source->list[idx]);
+      free(name);
+      continue;
+    }
+
+    result->list[result->count++] = source->list[idx];
+    free(name);
   }
 
-  size_t pos = 0;
-  size_t input_name_length = strnlen(args->input, MAX_FILENAME_LENGTH);
-  for (size_t idx = 0; idx < input_name_length; idx++) {
-    if (args->input[idx] == '.')
-      pos = idx;
-  }
-
-  char *input_name = strndup(args->input, pos);
-  char *extension = strndup(args->input + pos, input_name_length);
-
-  char *target = malloc(sizeof(char *) * MAX_FILENAME_LENGTH);
-  check_malloc(target);
-  snprintf(target, MAX_FILENAME_LENGTH, "%s_test%s", input_name, extension);
-  free(input_name);
-  free(extension);
-  return target;
-}
-
-void add_header_to_target(char *input, char *target, bool is_custom_target) {
-  if (is_custom_target && access(target, F_OK) == 0) {
-    log_debug("target already exist, skipping header generation\n");
-    return;
-  }
-
-  char *include_header = malloc(sizeof(char *) * MAX_INCLUDE_LENGTH);
-  check_malloc(include_header);
-
-  // clean input name
-  char *input_copy = strndup(input, MAX_INPUT_LENGTH);
-  char *base_input_name = basename(input_copy);
-
-  snprintf(include_header, MAX_INCLUDE_LENGTH,
-           "#include \"%s\" // basefile expected to be in the same directory, "
-           "change this as necesarry\n",
-           base_input_name);
-  free(input_copy);
-
-  // can be optimized by passing the FILE from main function inste
-  FILE *f;
-  if (is_custom_target) {
-    f = fopen(target, "w");
-  } else {
-    f = stdout;
-  }
-  fputs(include_header, f);
-  fputs("#include <stdlib.h>\n", f);
-  fputs("#include <stdio.h>\n\n", f);
-  free(include_header);
-  if (is_custom_target)
-    fclose(f);
+  free_metadata_list(source, false);
+  return result;
 }

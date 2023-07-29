@@ -1,11 +1,13 @@
 #ifndef LOGGER_H_
 #define LOGGER_H_
 
+#include <stdarg.h>
+
 enum log_level {
-  ERROR,
-  WARN,
-  INFO,
-  DEBUG,
+  ERROR_LEVEL,
+  WARN_LEVEL,
+  INFO_LEVEL,
+  DEBUG_LEVEL,
 };
 
 struct log {
@@ -16,6 +18,7 @@ void init_logger(struct log *logger);
 
 enum log_level map_from_level(const int level);
 
+void vprint_log(const char *fmt, va_list args, enum log_level level);
 void log_error(const char *message);
 void log_errorf(const char *fmt, ...);
 void log_warn(const char *message);
