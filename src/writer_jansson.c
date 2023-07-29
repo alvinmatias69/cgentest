@@ -7,13 +7,16 @@
 #include <string.h>
 
 json_t *map_json(struct write_result_params *params);
+void free_json(json_t *root, struct write_result_params *params);
 
 void write_result(struct write_result_params *params) {
   log_warn("start writing result using jansson\n");
   log_info("start mapping to json\n");
   json_t *metadata_json = map_json(params);
   log_info("finish mapping to json\n");
-  log_debugf("mapped json: \n%s\n", json_dumps(metadata_json, JSON_INDENT(2)));
+  char *json_string = json_dumps(metadata_json, JSON_INDENT(2));
+  log_debugf("mapped json: \n%s\n", json_string);
+  free(json_string);
 
   log_debug("start writing result to target\n");
   int write_result =
@@ -23,10 +26,9 @@ void write_result(struct write_result_params *params) {
     throwf("error while writing result: %s\n", strerror(errno));
 
   log_debug("finish writing result to target\n");
-  json_object_clear(metadata_json);
+  free_json(metadata_json, params);
 }
 
-// TODO: Fix error while writing to mustach
 json_t *map_json(struct write_result_params *params) {
   json_t *root = json_object();
 
@@ -67,4 +69,38 @@ json_t *map_json(struct write_result_params *params) {
   }
 
   return root;
+}
+
+void free_json(json_t *root, struct write_result_params *params) {
+  json_decref(json_object_get(root, "use_header"));
+  json_decref(json_object_get(root, "source"));
+
+  size_t idx;
+  json_t *val;
+  json_t *array = json_object_get(root, "metadata_list");
+  json_array_foreach(array, idx, val) {
+    json_decref(json_object_get(val, "name"));
+    json_decref(json_object_get(val, "type"));
+    json_decref(json_object_get(val, "is_primitive"));
+    json_decref(json_object_get(val, "is_void"));
+
+    size_t inner_idx;
+    json_t *inner_val;
+    json_array_foreach(json_object_get(val, "parameters"), inner_idx,
+                       inner_val) {
+      json_decref(json_object_get(inner_val, "name"));
+      json_decref(json_object_get(inner_val, "type"));
+      json_decref(json_object_get(inner_val, "is_last"));
+      json_decref(inner_val);
+    }
+    json_array_clear(json_object_get(val, "parameters"));
+    json_decref(json_object_get(val, "parameters"));
+
+    json_decref(val);
+  }
+
+  json_array_clear(array);
+  json_decref(array);
+
+  json_decref(root);
 }

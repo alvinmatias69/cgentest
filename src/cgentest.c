@@ -95,6 +95,9 @@ void generate_test(struct arguments *args) {
 
   free(template);
   free_metadata_list(result, true);
+
+  if (args->custom_target)
+    fclose(target);
 }
 
 char *get_template(struct arguments *args) {

@@ -13,7 +13,9 @@ void write_result(struct write_result_params *params) {
   log_info("start mapping to json\n");
   cJSON *metadata_json = map_json(params);
   log_info("finish mapping to json\n");
-  log_debugf("mapped json:\n%s\n", cJSON_Print(metadata_json));
+  char *string_json = cJSON_Print(metadata_json);
+  log_debugf("mapped json:\n%s\n", string_json);
+  free(string_json);
 
   log_debug("start writing result to target\n");
   int write_result =
