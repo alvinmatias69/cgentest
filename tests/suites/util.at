@@ -1,0 +1,3 @@
+AT_SETUP([util-test])
+AT_CHECK(["${abs_top_builddir}/tests/suites/util_test"],,[ignore])
+AT_CLEANUP

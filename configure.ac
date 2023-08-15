@@ -7,6 +7,10 @@ AC_CONFIG_SRCDIR([src/cgentest.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects])
 
+AC_CONFIG_TESTDIR([tests])
+AC_CONFIG_FILES([tests/Makefile
+                 tests/suites/Makefile])
+
 # Checks for programs.
 AC_PROG_CC
 
@@ -181,5 +185,6 @@ AC_CHECK_FUNCS([alarm atexit bzero clock_gettime dup2 euidaccess fchdir fdatasyn
 
 AC_CONFIG_MACRO_DIRS([m4])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile
+                 src/Makefile])
 AC_OUTPUT
