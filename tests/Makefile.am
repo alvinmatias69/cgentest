@@ -1,11 +1,12 @@
 SUBDIRS = suites
 
-EXTRA_DIST = testsuite.at suites/util.at \
-  $(TESTSUITE) atconfig package.m4
+EXTRA_DIST = testsuite.at suites/suites.at \
+  $(TESTSUITE) atconfig package.m4 \
+	$(top_srcdir)/tests/fixtures/util_read_test
 
 TESTSUITE = $(srcdir)/testsuite
 TESTSOURCES = $(srcdir)/testsuite.at \
-  $(srcdir)/suites/util.at
+  $(srcdir)/suites/suites.at
 AUTOM4TE = $(SHELL) $(top_srcdir)/missing --run autom4te
 AUTOTEST = $(AUTOM4TE) --language=autotest
 

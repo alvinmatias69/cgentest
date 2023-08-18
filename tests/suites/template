@@ -1,0 +1,47 @@
+{{#use_header}}
+#include "{{source}}"
+#include <stdlib.h>
+#include <stdio.h>
+
+{{/use_header}}
+{{#metadata_list}}
+
+void {{name}}_test() {
+    struct {
+        char name[100];
+        struct {
+            {{#parameters}}
+            {{type}} {{name}};
+            {{/parameters}}
+        } parameters;
+        {{^is_void}}
+        {{type}} expected;
+        {{/is_void}}
+    } tests[] = {
+
+    };
+
+    size_t length = sizeof(tests) / sizeof(tests[0]);
+    printf("Running {{name}}_test\n");
+    for (size_t idx = 0; idx < length; idx++) {
+        printf(" %s: \t", tests[idx].name);
+        {{#is_void}}
+        // TODO: add check for side effect
+        {{name}}({{#parameters}}tests[idx].parameters.{{name}}{{^is_last}}, {{/is_last}}{{/parameters}});
+        {{/is_void}}
+        {{^is_void}}
+        {{^is_primitive}}
+        // TODO: use proper compare function
+        {{/is_primitive}}
+        {{type}} result = {{name}}({{#parameters}}tests[idx].parameters.{{name}}{{^is_last}}, {{/is_last}}{{/parameters}});
+        if (tests[idx].expected == result) {
+            printf("Success\n");
+        } else {
+            printf("Failed\n");
+            fprintf(stderr, "Failed on %s:\n\tExpecting: %s\n\tGot: %s\n",
+                    tests[idx].name, tests[idx].expected, result);
+        }
+        {{/is_void}}
+    }
+}
+{{/metadata_list}}
