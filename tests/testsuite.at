@@ -1,4 +1,4 @@
 AT_INIT
 AT_COLOR_TEST
 
-m4_include([suites/util.at])
+m4_include([suites/suites.at])

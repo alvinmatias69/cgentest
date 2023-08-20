@@ -1,4 +1,5 @@
 #include "src/entity.h"
+#include <stdlib.h>
 #include <string.h>
 
 bool metadataiseq(struct metadata *first, struct metadata *second) {
@@ -38,4 +39,41 @@ bool metadatalistiseq(struct metadata_list *first,
       return false;
 
   return true;
+}
+
+// need to be freed after
+char *metadatafmt(struct metadata_list *list) {
+  char *result = reallocarray(NULL, sizeof(char *), 512);
+  snprintf(result, 32, "count                  : %lu\n", list->count);
+  for (size_t idx = 0; idx < list->count; idx++) {
+    struct metadata current = list->list[idx];
+    char *paramstr = reallocarray(NULL, sizeof(char *), 512);
+    for (size_t inner = 0; inner < current.parameter_count; inner++) {
+      char *paramcurrent = reallocarray(NULL, sizeof(char *), 512);
+      snprintf(paramcurrent, 512,
+               "- name : %s\n"
+               "  type : %s\n",
+               current.params[inner].name, current.params[inner].type);
+      strncat(paramstr, paramcurrent, 512);
+      free(paramcurrent);
+    }
+
+    char *currentstr = reallocarray(NULL, sizeof(char *), 512);
+    snprintf(currentstr, 512,
+             "name                   : %s\n"
+             "return type            : %s\n"
+             "return primitive type? : %d\n"
+             "void function?         : %d\n"
+             "parameters count       : %lu\n"
+             "parameters             :\n%s"
+             "---\n",
+             current.name, current.return_type.name,
+             current.return_type.is_primitive, current.return_type.is_void,
+             current.parameter_count, paramstr);
+    free(paramstr);
+    strncat(result, currentstr, 512);
+    free(currentstr);
+  }
+
+  return result;
 }
