@@ -101,11 +101,11 @@ void filter_test() {
       printf("Failed\n");
       fprintf(stderr, "Failed on %s:\n", tests[idx].name);
 
-      char *expectedstr = metadatafmt(tests[idx].expected);
+      char *expectedstr = metadatalistfmt(tests[idx].expected);
       fprintf(stderr, "\tExpecting: \n%s\n", expectedstr);
       free(expectedstr);
 
-      char *gotstr = metadatafmt(result);
+      char *gotstr = metadatalistfmt(result);
       fprintf(stderr, "\tGot: \n%s\n", gotstr);
       free(gotstr);
     }

@@ -3,7 +3,9 @@
 #include <string.h>
 
 bool metadataiseq(struct metadata *first, struct metadata *second) {
-  if (strncmp(first->name, second->name, 100) != 0)
+  if ((first->name != second->name) || // xor
+      (first->name && second->name &&
+       strncmp(first->name, second->name, 100) != 0))
     return false;
 
   if (first->return_type.is_primitive != second->return_type.is_primitive)
@@ -41,38 +43,43 @@ bool metadatalistiseq(struct metadata_list *first,
   return true;
 }
 
+char *metadatafmt(struct metadata *metadata) {
+  char *paramstr = reallocarray(NULL, sizeof(char *), 512);
+  for (size_t inner = 0; inner < metadata->parameter_count; inner++) {
+    char *paramcurrent = reallocarray(NULL, sizeof(char *), 512);
+    snprintf(paramcurrent, 512,
+             "- name : %s\n"
+             "  type : %s\n",
+             metadata->params[inner].name, metadata->params[inner].type);
+    strncat(paramstr, paramcurrent, 512);
+    free(paramcurrent);
+  }
+
+  char *result = reallocarray(NULL, sizeof(char *), 512);
+  snprintf(result, 512,
+           "name                   : %s\n"
+           "return type            : %s\n"
+           "return primitive type? : %d\n"
+           "void function?         : %d\n"
+           "parameters count       : %lu\n"
+           "parameters             :\n%s"
+           "---\n",
+           metadata->name, metadata->return_type.name,
+           metadata->return_type.is_primitive, metadata->return_type.is_void,
+           metadata->parameter_count, paramstr);
+  free(paramstr);
+
+  return result;
+}
+
 // need to be freed after
-char *metadatafmt(struct metadata_list *list) {
+char *metadatalistfmt(struct metadata_list *list) {
   char *result = reallocarray(NULL, sizeof(char *), 512);
   snprintf(result, 32, "count                  : %lu\n", list->count);
   for (size_t idx = 0; idx < list->count; idx++) {
-    struct metadata current = list->list[idx];
-    char *paramstr = reallocarray(NULL, sizeof(char *), 512);
-    for (size_t inner = 0; inner < current.parameter_count; inner++) {
-      char *paramcurrent = reallocarray(NULL, sizeof(char *), 512);
-      snprintf(paramcurrent, 512,
-               "- name : %s\n"
-               "  type : %s\n",
-               current.params[inner].name, current.params[inner].type);
-      strncat(paramstr, paramcurrent, 512);
-      free(paramcurrent);
-    }
-
-    char *currentstr = reallocarray(NULL, sizeof(char *), 512);
-    snprintf(currentstr, 512,
-             "name                   : %s\n"
-             "return type            : %s\n"
-             "return primitive type? : %d\n"
-             "void function?         : %d\n"
-             "parameters count       : %lu\n"
-             "parameters             :\n%s"
-             "---\n",
-             current.name, current.return_type.name,
-             current.return_type.is_primitive, current.return_type.is_void,
-             current.parameter_count, paramstr);
-    free(paramstr);
-    strncat(result, currentstr, 512);
-    free(currentstr);
+    char *current = metadatafmt(&list->list[idx]);
+    strncat(result, current, 512);
+    free(current);
   }
 
   return result;

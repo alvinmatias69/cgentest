@@ -9,7 +9,7 @@ struct log default_logger = {.level = ERROR_LEVEL};
 void init_logger(struct log *log) { logger = log; }
 
 // maybe we don't need getter
-struct log *get_logger() {
+struct log *get_logger(void) {
   return logger == NULL ? &default_logger : logger;
 };
 
