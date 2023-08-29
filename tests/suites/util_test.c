@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void strbool_test() {
+void strbool_test(void) {
   struct {
     char name[100];
     struct {
@@ -35,7 +35,7 @@ void strbool_test() {
   }
 }
 
-void strloglvl_test() {
+void strloglvl_test(void) {
   struct {
     char name[100];
     struct {
@@ -75,7 +75,7 @@ void strloglvl_test() {
   }
 }
 
-void name_in_list_test() {
+void name_in_list_test(void) {
   struct metadata member = {.name = "needle"};
   struct metadata_list list = {.list = &member, .count = 1};
 
@@ -111,7 +111,7 @@ void name_in_list_test() {
   }
 }
 
-void read_file_test() {
+void read_file_test(void) {
   char path[100];
   snprintf(&path, 100, "%s/util_read_test", FIXTURE_PATH);
   struct {
@@ -141,7 +141,7 @@ void read_file_test() {
   }
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
   strbool_test();
   strloglvl_test();
   name_in_list_test();

@@ -9,7 +9,7 @@
 void mock_free_metadata(struct metadata *metadata) {}
 void mock_free_metadata_list(struct metadata_list *list, bool free_member) {}
 
-void filter_test() {
+void filter_test(void) {
   struct {
     char name[100];
     struct {

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void map_from_level_test() {
+void map_from_level_test(void) {
   struct {
     char name[100];
     struct {
