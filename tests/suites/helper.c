@@ -3,7 +3,7 @@
 #include <string.h>
 
 bool metadataiseq(struct metadata *first, struct metadata *second) {
-  if ((first->name != second->name) || // xor
+  if ((!first->name != !second->name) || // xor
       (first->name && second->name &&
        strncmp(first->name, second->name, 100) != 0))
     return false;
@@ -14,7 +14,9 @@ bool metadataiseq(struct metadata *first, struct metadata *second) {
   if (first->return_type.is_void != second->return_type.is_void)
     return false;
 
-  if (strncmp(first->return_type.name, second->return_type.name, 100) != 0)
+  if ((!first->return_type.name != !second->return_type.name) || // xor
+      (first->return_type.name && second->return_type.name &&
+       strncmp(first->return_type.name, second->return_type.name, 100) != 0))
     return false;
 
   if (first->parameter_count != second->parameter_count)

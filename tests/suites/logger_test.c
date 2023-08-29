@@ -13,15 +13,19 @@ void map_from_level_test() {
       {.name = "Success map to ERROR",
        .parameters = {.level = 0},
        .expected = ERROR_LEVEL},
+
       {.name = "Success map to WARN",
        .parameters = {.level = 1},
        .expected = WARN_LEVEL},
+
       {.name = "Success map to INFO",
        .parameters = {.level = 2},
        .expected = INFO_LEVEL},
+
       {.name = "Success map to DEBUG",
        .parameters = {.level = 3},
        .expected = DEBUG_LEVEL},
+
       {.name = "Success default to DEBUG",
        .parameters = {.level = 69},
        .expected = DEBUG_LEVEL},

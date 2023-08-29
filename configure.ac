@@ -152,7 +152,7 @@ AM_CONDITIONAL([USE_JANSSON], [test "x${have_jansson}" = "xyes"])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([strings.h unistd.h])
+AC_CHECK_HEADERS([strings.h unistd.h regex.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL

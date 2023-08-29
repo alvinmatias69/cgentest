@@ -14,6 +14,7 @@ void strbool_test() {
       {.name = "Success parse true",
        .parameters = {.var = true},
        .expected = "true"},
+
       {.name = "Success parse false",
        .parameters = {.var = false},
        .expected = "false"},
@@ -45,12 +46,15 @@ void strloglvl_test() {
       {.name = "Success parse level ERROR",
        .parameters = {.level = ERROR_LEVEL},
        .expected = "error"},
+
       {.name = "Success parse level WARN",
        .parameters = {.level = WARN_LEVEL},
        .expected = "warn"},
+
       {.name = "Success parse level INFO",
        .parameters = {.level = INFO_LEVEL},
        .expected = "info"},
+
       {.name = "Success parse level DEBUG",
        .parameters = {.level = DEBUG_LEVEL},
        .expected = "debug"},

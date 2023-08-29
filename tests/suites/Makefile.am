@@ -9,4 +9,5 @@ logger_test_SOURCES = logger_test.c
 cgentest_test_SOURCES = cgentest_test.c $(top_srcdir)/src/util.c mocks/logger.c mocks/parser.c mocks/writer.c
 parser_test_SOURCES = parser_test.c mocks/util.c mocks/logger.c
 
-AM_CPPFLAGS = -I$(top_builddir)/src -I$(top_srcdir)/src -DFIXTURE_PATH='"$(abs_top_srcdir)/tests/fixtures"' -DINSTALLED_TEMPLATE_PATH='"$(pkgdatadir)/template"' -DLOCAL_TEMPLATE_PATH='"$(abs_top_srcdir)/data/template"' -g3 -O0
+AM_CPPFLAGS = -I$(top_srcdir)/src -I$(abs_top_srcdir)/src -DFIXTURE_PATH='"$(abs_top_srcdir)/tests/fixtures"' -DINSTALLED_TEMPLATE_PATH='"$(pkgdatadir)/template"' -DLOCAL_TEMPLATE_PATH='"$(abs_top_srcdir)/data/template"' -g3 -O0
+# AM_CPPFLAGS = -DFIXTURE_PATH='"$(abs_top_srcdir)/tests/fixtures"' -DINSTALLED_TEMPLATE_PATH='"$(pkgdatadir)/template"' -DLOCAL_TEMPLATE_PATH='"$(abs_top_srcdir)/data/template"' -g3 -O0

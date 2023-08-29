@@ -1,7 +1,7 @@
 bin_PROGRAMS = cgentest
-dist_pkgdata_DATA = $(abs_top_srcdir)/data/template
-
 cgentest_SOURCES = cgentest.c cli.c parser.c logger.c main.c util.c
+
+include_HEADERS = cgentest.h cli.h entity.h local_limit.h logger.h parser.h util.h writer.h
 
 if USE_JSONC
 cgentest_SOURCES += writer_jsonc.c

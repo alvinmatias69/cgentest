@@ -24,6 +24,7 @@ void filter_test() {
                       .target =
                           &(struct metadata_list){.count = 0, .list = NULL}},
        .expected = &(struct metadata_list){.count = 0, .list = NULL}},
+
       {.name = "Success on empty target list",
        .parameters =
            {.source =
@@ -41,6 +42,7 @@ void filter_test() {
                    (struct metadata[]){
                        {.name = "first", .return_type = {.name = ""}},
                    }}},
+
       {.name = "Success on found item",
        .parameters =
            {.source =
@@ -63,6 +65,7 @@ void filter_test() {
                                            {.name = "second",
                                             .return_type = {.name = ""}},
                                        }}},
+
       {.name = "Success on not found item",
        .parameters =
            {.source =
