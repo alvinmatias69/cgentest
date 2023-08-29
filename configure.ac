@@ -9,7 +9,8 @@ AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects])
 
 AC_CONFIG_TESTDIR([tests])
 AC_CONFIG_FILES([tests/Makefile
-                 tests/suites/Makefile])
+                 tests/suites/Makefile
+                 tests/integrations/Makefile])
 
 # Checks for programs.
 AC_PROG_CC

@@ -614,6 +614,7 @@ at_help_all="1;suites.at:1;util-test;;
 2;suites.at:5;logger-test;;
 3;suites.at:9;cgentest-test;;
 4;suites.at:13;parser-test;;
+5;integrations.at:1;jsonc-integrations;;
 "
 # List of the all the test groups.
 at_groups_all=`printf "%s\n" "$at_help_all" | sed 's/;.*//'`
@@ -627,7 +628,7 @@ at_fn_validate_ranges ()
   for at_grp
   do
     eval at_value=\$$at_grp
-    if test $at_value -lt 1 || test $at_value -gt 4; then
+    if test $at_value -lt 1 || test $at_value -gt 5; then
       printf "%s\n" "invalid test group: $at_value" >&2
       exit 1
     fi
@@ -2089,3 +2090,29 @@ $at_traceon; }
 ) 5>&1 2>&1 7>&- | eval $at_tee_pipe
 read at_status <"$at_status_file"
 #AT_STOP_4
+#AT_START_5
+at_fn_group_banner 5 'integrations.at:1' \
+  "jsonc-integrations" "                             "
+at_xfail=no
+(
+  printf "%s\n" "5. $at_setup_line: testing $at_desc ..."
+  $at_traceon
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:2: \"\${abs_top_builddir}/tests/integrations/jsonc_test\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:2"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo stdout:; cat "$at_stdout"
+at_fn_check_status 1 $at_status "$at_srcdir/integrations.at:2"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+  set +x
+  $at_times_p && times >"$at_times_file"
+) 5>&1 2>&1 7>&- | eval $at_tee_pipe
+read at_status <"$at_status_file"
+#AT_STOP_5

@@ -6,7 +6,7 @@
 {{/use_header}}
 {{#metadata_list}}
 
-void {{name}}_test() {
+void {{name}}_test(void) {
     struct {
         char name[100];
         struct {

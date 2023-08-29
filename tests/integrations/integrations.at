@@ -1,0 +1,3 @@
+AT_SETUP([jsonc-integrations])
+AT_CHECK(["${abs_top_builddir}/tests/integrations/jsonc_test"],[1],[ignore])
+AT_CLEANUP
