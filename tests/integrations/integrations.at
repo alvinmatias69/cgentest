@@ -1,31 +1,31 @@
 m4_define([TEST_FIXTURES], [[set -x
-    help_text="$(cat "${abs_top_builddir}/tests/fixtures/help_text")
+    help_text="$(cat "${abs_top_srcdir}/tests/fixtures/help_text")
 "
-    no_parameters="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters")
+    no_parameters="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/no_parameters")
 "
-    no_parameters_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_primitive")
+    no_parameters_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/no_parameters_primitive")
 "
-    no_parameters_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_enum")
+    no_parameters_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/no_parameters_enum")
 "
-    no_parameters_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_struct")
+    no_parameters_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/no_parameters_struct")
 "
-    single_parameter="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter")
+    single_parameter="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/single_parameter")
 "
-    single_parameter_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_primitive")
+    single_parameter_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/single_parameter_primitive")
 "
-    single_parameter_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_enum")
+    single_parameter_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/single_parameter_enum")
 "
-    single_parameter_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_struct")
+    single_parameter_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/single_parameter_struct")
 "
-    multiple_parameters="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters")
+    multiple_parameters="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/multiple_parameters")
 "
-    multiple_parameters_with_variadic="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_with_variadic")
+    multiple_parameters_with_variadic="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/multiple_parameters_with_variadic")
 "
-    multiple_parameters_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_primitive")
+    multiple_parameters_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/multiple_parameters_primitive")
 "
-    multiple_parameters_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_enum")
+    multiple_parameters_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/multiple_parameters_enum")
 "
-    multiple_parameters_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_struct")
+    multiple_parameters_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_srcdir}"'@' "${abs_top_srcdir}/tests/fixtures/multiple_parameters_struct")
 "
 ]])
 
@@ -33,21 +33,21 @@ AT_SETUP([jsonc-integrations])
 TEST_FIXTURES
 AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["-h"],,[${help_text}])
 
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/no_parameters.c"],,[${no_parameters}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/no_parameters_primitive.c"],,[${no_parameters_primitive}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/no_parameters_enum.c"],,[${no_parameters_enum}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/no_parameters_struct.c"],,[${no_parameters_struct}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters.c"],,[${no_parameters}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters_primitive.c"],,[${no_parameters_primitive}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters_enum.c"],,[${no_parameters_enum}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters_struct.c"],,[${no_parameters_struct}])
 
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/single_parameter.c"],,[${single_parameter}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/single_parameter_primitive.c"],,[${single_parameter_primitive}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/single_parameter_enum.c"],,[${single_parameter_enum}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/single_parameter_struct.c"],,[${single_parameter_struct}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter.c"],,[${single_parameter}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter_primitive.c"],,[${single_parameter_primitive}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter_enum.c"],,[${single_parameter_enum}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter_struct.c"],,[${single_parameter_struct}])
 
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/multiple_parameters.c"],,[${multiple_parameters}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/multiple_parameters_with_variadic.c"],,[${multiple_parameters_with_variadic}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/multiple_parameters_primitive.c"],,[${multiple_parameters_primitive}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/multiple_parameters_enum.c"],,[${multiple_parameters_enum}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_builddir}/tests/fixtures/multiple_parameters_struct.c"],,[${multiple_parameters_struct}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters.c"],,[${multiple_parameters}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_with_variadic.c"],,[${multiple_parameters_with_variadic}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_primitive.c"],,[${multiple_parameters_primitive}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_enum.c"],,[${multiple_parameters_enum}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jsonc_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_struct.c"],,[${multiple_parameters_struct}])
 
 AT_CLEANUP
 
@@ -55,21 +55,21 @@ AT_SETUP([cjson-integrations])
 TEST_FIXTURES
 AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["-h"],,[${help_text}])
 
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/no_parameters.c"],,[${no_parameters}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/no_parameters_primitive.c"],,[${no_parameters_primitive}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/no_parameters_enum.c"],,[${no_parameters_enum}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/no_parameters_struct.c"],,[${no_parameters_struct}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters.c"],,[${no_parameters}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters_primitive.c"],,[${no_parameters_primitive}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters_enum.c"],,[${no_parameters_enum}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters_struct.c"],,[${no_parameters_struct}])
 
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/single_parameter.c"],,[${single_parameter}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/single_parameter_primitive.c"],,[${single_parameter_primitive}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/single_parameter_enum.c"],,[${single_parameter_enum}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/single_parameter_struct.c"],,[${single_parameter_struct}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter.c"],,[${single_parameter}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter_primitive.c"],,[${single_parameter_primitive}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter_enum.c"],,[${single_parameter_enum}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter_struct.c"],,[${single_parameter_struct}])
 
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/multiple_parameters.c"],,[${multiple_parameters}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/multiple_parameters_with_variadic.c"],,[${multiple_parameters_with_variadic}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/multiple_parameters_primitive.c"],,[${multiple_parameters_primitive}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/multiple_parameters_enum.c"],,[${multiple_parameters_enum}])
-AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_builddir}/tests/fixtures/multiple_parameters_struct.c"],,[${multiple_parameters_struct}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters.c"],,[${multiple_parameters}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_with_variadic.c"],,[${multiple_parameters_with_variadic}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_primitive.c"],,[${multiple_parameters_primitive}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_enum.c"],,[${multiple_parameters_enum}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/cjson_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_struct.c"],,[${multiple_parameters_struct}])
 
 AT_CLEANUP
 
