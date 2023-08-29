@@ -117,7 +117,6 @@ void free_args(struct arguments *args) {
     free(args->template_file);
 }
 
-// TODO: pretty this up
 void print_args(struct arguments *args) {
   log_debug("Argument list:\n");
   log_debugf("  input file           : %s\n", args->input);
@@ -137,30 +136,33 @@ void print_args(struct arguments *args) {
   log_debugf("  log level            : %s\n", strloglvl(args->log_level));
 }
 
-// TODO: add remaining args
 void print_help(void) {
-  printf(
-      "%s\n"
-      "\n"
-      "Usage:\n"
-      "\t%s [-o <output_file>] [-v] [-f <filter_query>] [--force] INPUT_FILE\n"
-      "\t%s -h | --help\n"
-      "\t%s -V | --version\n"
-      "\n"
-      "Options:\n"
-      "\t-o --output\t Path to generated test file. Will print to stdout on "
-      "empty. [default: \"\"]\n"
-      "\t-v --verbose\t Log verbosity, add more for more verbose log\n"
-      "\t-O --only\t regexp. Generate tests for functions that match only. "
-      "[default: \"\"]\n"
-      "\t-e --exclude\t regexp. Exclude generate tests for function that "
-      "match. Takes precedence over --only [default: \"\"]\n"
-      "\t-F --force\t Force generate function even if generated function "
-      "exists\n"
-      "\t-t --template\t Path to custom mustache template [default: \"\"]\n"
-      "\t-h --help\t Show this screen\n"
-      "\t-v --version\t Show version\n",
-      PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
+  printf("%s\n"
+         "\n"
+         "Usage:\n"
+         "\t%s [-o | --output <output_file>] [-O | --only "
+         "<filter_only_regex>] [-e | --exclude <filter_exclude_regex>] [-t | "
+         "--template <custom_template_path>] [-b | --bin "
+         "<custom_ctags_bin_path>] [-F | --force] [-v | --verbose] "
+         "INPUT_FILE\n"
+         "\t%s -h | --help\n"
+         "\t%s -V | --version\n"
+         "\n"
+         "Options:\n"
+         "\t-o --output\t Path to generated test file. Will print to stdout on "
+         "empty. [default: \"\"]\n"
+         "\t-v --verbose\t Log verbosity, add more for more verbose log\n"
+         "\t-O --only\t regexp. Generate tests for functions that match only. "
+         "[default: \"\"]\n"
+         "\t-e --exclude\t regexp. Exclude generate tests for function that "
+         "match. Takes precedence over --only [default: \"\"]\n"
+         "\t-b --bin\t Path to universal ctags binary [default: \"ctags\"]\n"
+         "\t-F --force\t Force generate function even if generated function "
+         "exists\n"
+         "\t-t --template\t Path to custom mustache template [default: \"\"]\n"
+         "\t-h --help\t Show this screen\n"
+         "\t-V --version\t Show version\n",
+         PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
 }
 
 void print_version(void) { printf("%s\n", PACKAGE_STRING); }

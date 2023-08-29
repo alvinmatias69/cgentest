@@ -614,7 +614,9 @@ at_help_all="1;suites.at:1;util-test;;
 2;suites.at:5;logger-test;;
 3;suites.at:9;cgentest-test;;
 4;suites.at:13;parser-test;;
-5;integrations.at:1;jsonc-integrations;;
+5;integrations.at:32;jsonc-integrations;;
+6;integrations.at:54;cjson-integrations;;
+7;integrations.at:76;jansson-integrations;;
 "
 # List of the all the test groups.
 at_groups_all=`printf "%s\n" "$at_help_all" | sed 's/;.*//'`
@@ -628,7 +630,7 @@ at_fn_validate_ranges ()
   for at_grp
   do
     eval at_value=\$$at_grp
-    if test $at_value -lt 1 || test $at_value -gt 5; then
+    if test $at_value -lt 1 || test $at_value -gt 7; then
       printf "%s\n" "invalid test group: $at_value" >&2
       exit 1
     fi
@@ -2091,23 +2093,540 @@ $at_traceon; }
 read at_status <"$at_status_file"
 #AT_STOP_4
 #AT_START_5
-at_fn_group_banner 5 'integrations.at:1' \
+at_fn_group_banner 5 'integrations.at:32' \
   "jsonc-integrations" "                             "
 at_xfail=no
 (
   printf "%s\n" "5. $at_setup_line: testing $at_desc ..."
   $at_traceon
 
+set -x
+    help_text="$(cat "${abs_top_builddir}/tests/fixtures/help_text")
+"
+    no_parameters="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters")
+"
+    no_parameters_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_primitive")
+"
+    no_parameters_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_enum")
+"
+    no_parameters_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_struct")
+"
+    single_parameter="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter")
+"
+    single_parameter_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_primitive")
+"
+    single_parameter_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_enum")
+"
+    single_parameter_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_struct")
+"
+    multiple_parameters="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters")
+"
+    multiple_parameters_with_variadic="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_with_variadic")
+"
+    multiple_parameters_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_primitive")
+"
+    multiple_parameters_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_enum")
+"
+    multiple_parameters_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_struct")
+"
+
 { set +x
-printf "%s\n" "$at_srcdir/integrations.at:2: \"\${abs_top_builddir}/tests/integrations/jsonc_test\""
-at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:2"
-( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test"
+printf "%s\n" "$at_srcdir/integrations.at:34: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"-h\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:34"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "-h"
 ) >>"$at_stdout" 2>>"$at_stderr" 5>&-
 at_status=$? at_failed=false
 $at_check_filter
 at_fn_diff_devnull "$at_stderr" || at_failed=:
-echo stdout:; cat "$at_stdout"
-at_fn_check_status 1 $at_status "$at_srcdir/integrations.at:2"
+echo >>"$at_stdout"; printf "%s\n" "${help_text}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:34"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:36: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/no_parameters.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:36"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/no_parameters.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${no_parameters}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:36"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:37: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/no_parameters_primitive.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:37"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/no_parameters_primitive.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${no_parameters_primitive}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:37"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:38: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/no_parameters_enum.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:38"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/no_parameters_enum.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${no_parameters_enum}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:38"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:39: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/no_parameters_struct.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:39"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/no_parameters_struct.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${no_parameters_struct}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:39"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:41: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/single_parameter.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:41"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/single_parameter.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${single_parameter}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:41"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:42: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/single_parameter_primitive.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:42"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/single_parameter_primitive.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${single_parameter_primitive}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:42"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:43: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/single_parameter_enum.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:43"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/single_parameter_enum.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${single_parameter_enum}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:43"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:44: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/single_parameter_struct.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:44"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/single_parameter_struct.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${single_parameter_struct}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:44"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:46: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/multiple_parameters.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:46"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/multiple_parameters.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${multiple_parameters}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:46"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:47: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/multiple_parameters_with_variadic.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:47"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/multiple_parameters_with_variadic.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${multiple_parameters_with_variadic}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:47"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:48: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/multiple_parameters_primitive.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:48"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/multiple_parameters_primitive.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${multiple_parameters_primitive}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:48"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:49: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/multiple_parameters_enum.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:49"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/multiple_parameters_enum.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${multiple_parameters_enum}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:49"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:50: \"\${abs_top_builddir}/tests/integrations/jsonc_test\" \"\${abs_top_builddir}/tests/fixtures/multiple_parameters_struct.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:50"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jsonc_test" "${abs_top_builddir}/tests/fixtures/multiple_parameters_struct.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${multiple_parameters_struct}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:50"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+
+  set +x
+  $at_times_p && times >"$at_times_file"
+) 5>&1 2>&1 7>&- | eval $at_tee_pipe
+read at_status <"$at_status_file"
+#AT_STOP_5
+#AT_START_6
+at_fn_group_banner 6 'integrations.at:54' \
+  "cjson-integrations" "                             "
+at_xfail=no
+(
+  printf "%s\n" "6. $at_setup_line: testing $at_desc ..."
+  $at_traceon
+
+set -x
+    help_text="$(cat "${abs_top_builddir}/tests/fixtures/help_text")
+"
+    no_parameters="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters")
+"
+    no_parameters_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_primitive")
+"
+    no_parameters_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_enum")
+"
+    no_parameters_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_struct")
+"
+    single_parameter="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter")
+"
+    single_parameter_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_primitive")
+"
+    single_parameter_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_enum")
+"
+    single_parameter_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_struct")
+"
+    multiple_parameters="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters")
+"
+    multiple_parameters_with_variadic="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_with_variadic")
+"
+    multiple_parameters_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_primitive")
+"
+    multiple_parameters_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_enum")
+"
+    multiple_parameters_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_struct")
+"
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:56: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"-h\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:56"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "-h"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${help_text}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:56"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:58: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/no_parameters.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:58"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/no_parameters.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${no_parameters}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:58"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:59: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/no_parameters_primitive.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:59"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/no_parameters_primitive.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${no_parameters_primitive}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:59"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:60: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/no_parameters_enum.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:60"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/no_parameters_enum.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${no_parameters_enum}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:60"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:61: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/no_parameters_struct.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:61"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/no_parameters_struct.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${no_parameters_struct}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:61"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:63: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/single_parameter.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:63"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/single_parameter.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${single_parameter}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:63"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:64: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/single_parameter_primitive.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:64"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/single_parameter_primitive.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${single_parameter_primitive}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:64"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:65: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/single_parameter_enum.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:65"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/single_parameter_enum.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${single_parameter_enum}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:65"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:66: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/single_parameter_struct.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:66"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/single_parameter_struct.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${single_parameter_struct}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:66"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:68: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/multiple_parameters.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:68"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/multiple_parameters.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${multiple_parameters}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:68"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:69: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/multiple_parameters_with_variadic.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:69"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/multiple_parameters_with_variadic.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${multiple_parameters_with_variadic}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:69"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:70: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/multiple_parameters_primitive.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:70"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/multiple_parameters_primitive.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${multiple_parameters_primitive}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:70"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:71: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/multiple_parameters_enum.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:71"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/multiple_parameters_enum.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${multiple_parameters_enum}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:71"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:72: \"\${abs_top_builddir}/tests/integrations/cjson_test\" \"\${abs_top_builddir}/tests/fixtures/multiple_parameters_struct.c\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:72"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/cjson_test" "${abs_top_builddir}/tests/fixtures/multiple_parameters_struct.c"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${multiple_parameters_struct}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:72"
+$at_failed && at_fn_log_failure
+$at_traceon; }
+
+
+  set +x
+  $at_times_p && times >"$at_times_file"
+) 5>&1 2>&1 7>&- | eval $at_tee_pipe
+read at_status <"$at_status_file"
+#AT_STOP_6
+#AT_START_7
+at_fn_group_banner 7 'integrations.at:76' \
+  "jansson-integrations" "                           "
+at_xfail=no
+(
+  printf "%s\n" "7. $at_setup_line: testing $at_desc ..."
+  $at_traceon
+
+set -x
+    help_text="$(cat "${abs_top_builddir}/tests/fixtures/help_text")
+"
+    no_parameters="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters")
+"
+    no_parameters_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_primitive")
+"
+    no_parameters_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_enum")
+"
+    no_parameters_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/no_parameters_struct")
+"
+    single_parameter="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter")
+"
+    single_parameter_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_primitive")
+"
+    single_parameter_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_enum")
+"
+    single_parameter_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/single_parameter_struct")
+"
+    multiple_parameters="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters")
+"
+    multiple_parameters_with_variadic="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_with_variadic")
+"
+    multiple_parameters_primitive="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_primitive")
+"
+    multiple_parameters_enum="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_enum")
+"
+    multiple_parameters_struct="$(sed 's@ROOT_PATH_TO_CHANGE@'"${abs_top_builddir}"'@' "${abs_top_builddir}/tests/fixtures/multiple_parameters_struct")
+"
+
+{ set +x
+printf "%s\n" "$at_srcdir/integrations.at:78: \"\${abs_top_builddir}/tests/integrations/jansson_test\" \"-h\""
+at_fn_check_prepare_notrace 'a ${...} parameter expansion' "integrations.at:78"
+( $at_check_trace; "${abs_top_builddir}/tests/integrations/jansson_test" "-h"
+) >>"$at_stdout" 2>>"$at_stderr" 5>&-
+at_status=$? at_failed=false
+$at_check_filter
+at_fn_diff_devnull "$at_stderr" || at_failed=:
+echo >>"$at_stdout"; printf "%s\n" "${help_text}" | \
+  $at_diff - "$at_stdout" || at_failed=:
+at_fn_check_status 0 $at_status "$at_srcdir/integrations.at:78"
 $at_failed && at_fn_log_failure
 $at_traceon; }
 
@@ -2115,4 +2634,4 @@ $at_traceon; }
   $at_times_p && times >"$at_times_file"
 ) 5>&1 2>&1 7>&- | eval $at_tee_pipe
 read at_status <"$at_status_file"
-#AT_STOP_5
+#AT_STOP_7

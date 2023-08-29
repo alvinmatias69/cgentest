@@ -1,0 +1,17 @@
+cgentest
+
+Usage:
+	cgentest [-o | --output <output_file>] [-O | --only <filter_only_regex>] [-e | --exclude <filter_exclude_regex>] [-t | --template <custom_template_path>] [-b | --bin <custom_ctags_bin_path>] [-F | --force] [-v | --verbose] INPUT_FILE
+	cgentest -h | --help
+	cgentest -V | --version
+
+Options:
+	-o --output	 Path to generated test file. Will print to stdout on empty. [default: ""]
+	-v --verbose	 Log verbosity, add more for more verbose log
+	-O --only	 regexp. Generate tests for functions that match only. [default: ""]
+	-e --exclude	 regexp. Exclude generate tests for function that match. Takes precedence over --only [default: ""]
+	-b --bin	 Path to universal ctags binary [default: "ctags"]
+	-F --force	 Force generate function even if generated function exists
+	-t --template	 Path to custom mustache template [default: ""]
+	-h --help	 Show this screen
+	-V --version	 Show version

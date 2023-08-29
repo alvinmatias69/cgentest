@@ -1,0 +1,26 @@
+#include "ROOT_PATH_TO_CHANGE/tests/fixtures/no_parameters_enum.c"
+#include <stdlib.h>
+#include <stdio.h>
+
+
+void simple_test(void) {
+    struct {
+        char name[100];
+        struct {
+        } parameters;
+        enum level expected;
+    } tests[] = {
+
+    };
+
+    size_t length = sizeof(tests) / sizeof(tests[0]);
+    for (size_t idx = 0; idx < length; idx++) {
+        printf("Running simple_test: %s\n", tests[idx].name);
+        // TODO: use proper compare function
+        if (tests[idx].expected == simple()) {
+            printf("\t=== Success ===\n");
+        } else {
+            printf("\t=== Failure ===\n");
+        }
+    }
+}

@@ -1,10 +1,12 @@
 SUBDIRS = suites integrations
 
+FIXTURES = ${top_srcdir}/tests/fixtures
+
 EXTRA_DIST = testsuite.at \
 	suites/suites.at \
 	integrations/integrations.at \
 	$(TESTSUITE) atconfig package.m4 \
-	$(top_srcdir)/tests/fixtures/util_read_test
+	$(FIXTURES)
 
 TESTSUITE = $(srcdir)/testsuite
 TESTSOURCES = $(srcdir)/testsuite.at \

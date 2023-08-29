@@ -1,0 +1,1 @@
+enum level simple(void) {}
