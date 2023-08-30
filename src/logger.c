@@ -3,13 +3,14 @@
 #include <string.h>
 
 // logger don't need structure? can be a simple enum
-struct log *logger;
+struct log *logger = NULL;
+struct log default_logger = {.level = ERROR_LEVEL};
 
 void init_logger(struct log *log) { logger = log; }
 
 // maybe we don't need getter
-struct log *get_logger() {
-  return logger;
+struct log *get_logger(void) {
+  return logger == NULL ? &default_logger : logger;
 };
 
 enum log_level map_from_level(const int level) {

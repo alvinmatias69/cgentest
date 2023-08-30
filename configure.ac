@@ -7,6 +7,11 @@ AC_CONFIG_SRCDIR([src/cgentest.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects])
 
+AC_CONFIG_TESTDIR([tests])
+AC_CONFIG_FILES([tests/Makefile
+                 tests/suites/Makefile
+                 tests/integrations/Makefile])
+
 # Checks for programs.
 AC_PROG_CC
 
@@ -148,7 +153,7 @@ AM_CONDITIONAL([USE_JANSSON], [test "x${have_jansson}" = "xyes"])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([strings.h unistd.h])
+AC_CHECK_HEADERS([strings.h unistd.h regex.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -181,5 +186,6 @@ AC_CHECK_FUNCS([alarm atexit bzero clock_gettime dup2 euidaccess fchdir fdatasyn
 
 AC_CONFIG_MACRO_DIRS([m4])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile
+                 src/Makefile])
 AC_OUTPUT

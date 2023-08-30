@@ -123,7 +123,7 @@ void compile_regex(bool enabled, char *pattern, regex_t *regex) {
   if (!enabled)
     return;
 
-  int result = regcomp(regex, pattern, 0);
+  int result = regcomp(regex, pattern, REG_EXTENDED);
   if (result != 0)
     throwf("failure to compile regex: \"%s\"\n", pattern);
 }
@@ -169,6 +169,7 @@ struct metadata parse_single(tagEntry *entry, bool name_only) {
 }
 
 void parse_return_type(const char *typeref, struct metadata *metadata) {
+  log_debugf("raw return type: %s\n", typeref);
   size_t typeref_length = strnlen(typeref, MAX_FUNCTION_TYPE_LENGTH);
   size_t pos = 0;
   for (size_t idx = 0; idx < typeref_length; idx++)
@@ -199,6 +200,11 @@ void parse_return_type(const char *typeref, struct metadata *metadata) {
 }
 
 void parse_parameters(const char *parameters, struct metadata *metadata) {
+  log_debugf("raw parameters: %s\n", parameters);
+  // ignore empty parameters (e.g. int example())
+  if (strnlen(parameters, MAX_PARAMS_LENGTH) <= 2)
+    return;
+
   // ignore parameters for void (e.g. int example(void))
   if (strncmp(parameters, VOID_PARAMETER, MAX_PARAMS_LENGTH) == 0)
     return;

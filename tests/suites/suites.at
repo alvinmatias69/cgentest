@@ -1,0 +1,15 @@
+AT_SETUP([util-test])
+AT_CHECK(["${abs_top_builddir}/tests/suites/util_test"],,[ignore])
+AT_CLEANUP
+
+AT_SETUP([logger-test])
+AT_CHECK(["${abs_top_builddir}/tests/suites/logger_test"],,[ignore])
+AT_CLEANUP
+
+AT_SETUP([cgentest-test])
+AT_CHECK(["${abs_top_builddir}/tests/suites/cgentest_test"],,[ignore])
+AT_CLEANUP
+
+AT_SETUP([parser-test])
+AT_CHECK(["${abs_top_builddir}/tests/suites/parser_test"],,[ignore])
+AT_CLEANUP

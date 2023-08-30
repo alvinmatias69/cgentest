@@ -1,0 +1,29 @@
+#include "ROOT_PATH_TO_CHANGE/tests/fixtures/multiple_parameters_struct.c"
+#include <stdlib.h>
+#include <stdio.h>
+
+
+void simple_test(void) {
+    struct {
+        char name[100];
+        struct {
+            bool is_active;
+            char * name;
+            int age;
+        } parameters;
+        struct people expected;
+    } tests[] = {
+
+    };
+
+    size_t length = sizeof(tests) / sizeof(tests[0]);
+    for (size_t idx = 0; idx < length; idx++) {
+        printf("Running simple_test: %s\n", tests[idx].name);
+        // TODO: use proper compare function
+        if (tests[idx].expected == simple(tests[idx].parameters.is_active, tests[idx].parameters.name, tests[idx].parameters.age)) {
+            printf("\t=== Success ===\n");
+        } else {
+            printf("\t=== Failure ===\n");
+        }
+    }
+}

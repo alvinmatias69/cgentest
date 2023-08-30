@@ -22,8 +22,9 @@ void {{name}}_test(void) {
     };
 
     size_t length = sizeof(tests) / sizeof(tests[0]);
+    printf("Running {{name}}_test\n");
     for (size_t idx = 0; idx < length; idx++) {
-        printf("Running {{name}}_test: %s\n", tests[idx].name);
+        printf(" %s: \t", tests[idx].name);
         {{#is_void}}
         // TODO: add check for side effect
         {{name}}({{#parameters}}tests[idx].parameters.{{name}}{{^is_last}}, {{/is_last}}{{/parameters}});
@@ -32,10 +33,13 @@ void {{name}}_test(void) {
         {{^is_primitive}}
         // TODO: use proper compare function
         {{/is_primitive}}
-        if (tests[idx].expected == {{name}}({{#parameters}}tests[idx].parameters.{{name}}{{^is_last}}, {{/is_last}}{{/parameters}})) {
-            printf("\t=== Success ===\n");
+        {{type}} result = {{name}}({{#parameters}}tests[idx].parameters.{{name}}{{^is_last}}, {{/is_last}}{{/parameters}});
+        if (tests[idx].expected == result) {
+            printf("Success\n");
         } else {
-            printf("\t=== Failure ===\n");
+            printf("Failed\n");
+            fprintf(stderr, "Failed on %s:\n\tExpecting: %s\n\tGot: %s\n",
+                    tests[idx].name, tests[idx].expected, result);
         }
         {{/is_void}}
     }
