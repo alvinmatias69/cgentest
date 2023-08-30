@@ -1,0 +1,3 @@
+# cgentest
+
+A commandline tools that automatically generates [table driven tests](https://en.wikipedia.org/wiki/Data-driven_testing) boilerplate for C source files. Highly inspired by [gotests](https://github.com/cweill/gotests).
