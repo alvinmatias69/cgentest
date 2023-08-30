@@ -1,3 +1,76 @@
 # cgentest
 
 A commandline tools that automatically generates [table driven tests](https://en.wikipedia.org/wiki/Data-driven_testing) boilerplate for C source files. Highly inspired by [gotests](https://github.com/cweill/gotests).
+
+## Quick start
+
+Install required dependencies:
+- [universal-ctags](https://github.com/universal-ctags/ctags)
+- [libreadtags](https://github.com/universal-ctags/libreadtags)
+- JSON dependency (pick one)
+  - [cJSON](https://github.com/DaveGamble/cJSON)
+  - [json-c](https://github.com/json-c/json-c)
+  - [jansson](https://github.com/akheron/jansson)
+- [mustach](https://gitlab.com/jobol/mustach) (Install the libs of json according to the one installed earlier)
+
+Download the latest package release from the release page:
+https://github.com/alvinmatias69/cgentest/releases
+
+Extract and compile cgentest
+
+``` sh
+$ tar -xf cgentest-v1.0.0.tar.gz
+$ cd cgentest-v1.0.0
+$ ./configure
+$ make
+$ make install # might require superuser role
+```
+
+## Example
+
+Source code
+
+``` c
+int simple(bool is_active, char *name, int age) {}
+```
+
+Generated boilerplate
+
+``` c
+#include "example.c"
+#include <stdlib.h>
+#include <stdio.h>
+
+
+void simple_test(void) {
+    struct {
+        char name[100];
+        struct {
+            bool is_active;
+            char * name;
+            int age;
+        } parameters;
+        int expected;
+    } tests[] = {
+
+    };
+
+    size_t length = sizeof(tests) / sizeof(tests[0]);
+    for (size_t idx = 0; idx < length; idx++) {
+        printf("Running simple_test: %s\n", tests[idx].name);
+        if (tests[idx].expected == simple(tests[idx].parameters.is_active, tests[idx].parameters.name, tests[idx].parameters.age)) {
+            printf("\t=== Success ===\n");
+        } else {
+            printf("\t=== Failure ===\n");
+        }
+    }
+}
+```
+
+## Building from Source
+
+## Usage
+
+## Custom Template
+
+## Known Issue
