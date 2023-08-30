@@ -14,6 +14,7 @@ Install required dependencies:
 - [mustach](https://gitlab.com/jobol/mustach) (Install the libs of json according to the one installed earlier)
 
 Download the latest package release from the release page:
+
 https://github.com/alvinmatias69/cgentest/releases
 
 Extract and compile cgentest
@@ -68,6 +69,19 @@ void simple_test(void) {
 ```
 
 ## Building from Source
+
+Require autotools 2.71
+
+``` sh
+$ autoreconf -i
+```
+
+If you prefer one json library over the others, you can specify it when running configuration
+// TODO
+
+``` sh
+
+```
 
 ## Usage
 
