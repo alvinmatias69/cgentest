@@ -76,4 +76,21 @@ AT_CLEANUP
 AT_SETUP([jansson-integrations])
 TEST_FIXTURES
 AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["-h"],,[${help_text}])
+
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters.c"],,[${no_parameters}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters_primitive.c"],,[${no_parameters_primitive}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters_enum.c"],,[${no_parameters_enum}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/no_parameters_struct.c"],,[${no_parameters_struct}])
+
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter.c"],,[${single_parameter}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter_primitive.c"],,[${single_parameter_primitive}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter_enum.c"],,[${single_parameter_enum}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/single_parameter_struct.c"],,[${single_parameter_struct}])
+
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters.c"],,[${multiple_parameters}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_with_variadic.c"],,[${multiple_parameters_with_variadic}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_primitive.c"],,[${multiple_parameters_primitive}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_enum.c"],,[${multiple_parameters_enum}])
+AT_CHECK_UNQUOTED(["${abs_top_builddir}/tests/integrations/jansson_test"] ["${abs_top_srcdir}/tests/fixtures/multiple_parameters_struct.c"],,[${multiple_parameters_struct}])
+
 AT_CLEANUP

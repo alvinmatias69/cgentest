@@ -80,7 +80,7 @@ AS_IF([test "x${lib_set}" = "xyes"],
          [AC_CHECK_HEADER([mustach/mustach-json-c.h], [have_mustach_jsonc=yes])])
 
 AS_IF([test "x${have_mustach_jsonc}" = "xyes"],
-         [AC_SEARCH_LIBS([mustach_json_c_file], [mustach], [], [have_mustach_jsonc=no])])
+         [AC_SEARCH_LIBS([mustach_json_c_file], [mustach-jsonc], [], [have_mustach_jsonc=no])])
 
 have_jsonc=no
 AS_IF([test "x${have_mustach_jsonc}" = "xyes"],
@@ -102,7 +102,7 @@ AS_IF([test "x${lib_set}" = "xyes"],
          [AC_CHECK_HEADER([mustach/mustach-cjson.h], [have_mustach_cjson=yes])])
 
 AS_IF([test "x${have_mustach_cjson}" = "xyes"],
-         [AC_SEARCH_LIBS([mustach_cJSON_file], [mustach], [], [have_mustach_cjson=no])])
+         [AC_SEARCH_LIBS([mustach_cJSON_file], [mustach-cjson], [], [have_mustach_cjson=no])])
 
 have_cjson=no
 AS_IF([test "x${have_mustach_cjson}" = "xyes"],
@@ -124,7 +124,7 @@ AS_IF([test "x${lib_set}" = "xyes"],
          [AC_CHECK_HEADER([mustach/mustach-jansson.h], [have_mustach_jansson=yes])])
 
 AS_IF([test "x${have_mustach_jansson}" = "xyes"],
-         [AC_SEARCH_LIBS([mustach_jansson_file], [mustach], [], [have_mustach_jansson=no])])
+         [AC_SEARCH_LIBS([mustach_jansson_file], [mustach-jansson], [], [have_mustach_jansson=no])])
 
 have_jansson=no
 AS_IF([test "x${have_mustach_jansson}" = "xyes"],
