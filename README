@@ -155,7 +155,7 @@ $ cgentest -O yes -e no simple.c
 $ cgentest -t path/to/template simple.c
 ```
 
-For boileplate usage example, you can refer to tests suite [directory](/tests/suites).
+For boilerplate usage example, you can refer to tests suite [directory](/tests/suites).
 
 ## Custom Template
 
