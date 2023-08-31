@@ -20,8 +20,8 @@ https://github.com/alvinmatias69/cgentest/releases
 Extract and compile cgentest
 
 ``` sh
-$ tar -xf cgentest-v1.0.0.tar.gz
-$ cd cgentest-v1.0.0
+$ tar -xf cgentest-1.0.0.tar.gz
+$ cd cgentest-1.0.0
 $ ./configure
 $ make
 $ make install # might require superuser role
@@ -70,21 +70,144 @@ void simple_test(void) {
 
 ## Building from Source
 
-Require autotools 2.71
+Require autotools >= 2.71
 
 ``` sh
 $ autoreconf -i
 ```
 
 If you prefer one json library over the others, you can specify it when running configuration
-// TODO
 
+| Options        |
+|----------------|
+| --with-jsonc   |
+| --with-cjson   |
+| --with-jansson |
+
+example:
 ``` sh
-
+$ ./configure --with-jsonc
 ```
+
+If there's no option specified, the configuration will for check available json library and use the first one that it found. 
+Libraries search will be done with this order:
+1. `json-c`
+2. `cJSON`
+3. `jansson`
 
 ## Usage
 
+By default, cgentest will require an input file name and output the boilerplate to stdout.
+
+``` sh
+$ cgentest [options] INPUT_FILE
+```
+
+Available options are as follow.
+
+| Long Options | Short Options | Argument type | Description                                                                                                     |
+|--------------|---------------|---------------|-----------------------------------------------------------------------------------------------------------------|
+| version      | V             | none          | Display current cgentest version.                                                                               |
+| help         | h             | none          | Display help.                                                                                                   |
+| verbose      | v             | none          | Set verbosity, may be added multiple times.                                                                     |
+| output       | o             | string        | Target generated output. Will skip already available function unless `force` option is given. [default: stdout] |
+| force        | F             | none          | Force function generation even if the function is already available in target.                                  |
+| only         | O             | regex string  | Only generate function that match this regex.                                                                   |
+| exclude      | e             | regex string  | Exclude generate function that match this regex. Takes precedence over `only`.                                  |
+| template     | t             | string        | Path to custom template.                                                                                        |
+| bin          | b             | string        | Path to universal-ctags binary. If not specified, it'll use the default installed in the system.                |
+
+### Example
+
+* Generate from `simple.c` and output it to stdout
+
+```sh
+$ cgentest simple.c
+```
+
+* Generate to `simple_test.c`
+
+``` sh
+$ cgentest -o simple_test.c simple.c
+```
+
+* Generate with highest verbosity level
+
+``` sh
+$ cgentest -vvv -o simple_test.c simple.c
+```
+
+* Force generate test (available functions won't be skipped)
+
+``` sh
+$ cgentest -o simple_test.c --force simple.c
+```
+
+* Generate test that match `yes` and skip that match `no`
+
+``` sh
+$ cgentest -O yes -e no simple.c
+```
+
+* Generate test using custom template
+
+``` sh
+$ cgentest -t path/to/template simple.c
+```
+
+For boileplate usage example, you can refer to tests suite [directory](/tests/suites).
+
 ## Custom Template
 
-## Known Issue
+You can use your own [mustache](https://mustache.github.io/) template with cgentest. 
+
+The json contract is as follow.
+
+| Name          | Type              | Description                                    |
+|---------------|-------------------|------------------------------------------------|
+| use_header    | boolean           | Indicates whether the header will be generated |
+| source        | string            | Source of the generated test                   |
+| metadata_list | array of metadata | List of functions metadata                     |
+
+**metadata**
+
+| Name         | Type               | Description                                             |
+|--------------|--------------------|---------------------------------------------------------|
+| name         | string             | Name of the function                                    |
+| parameters   | array of parameter | List of parameter of the function                       |
+| is_void      | boolean            | Whether the function is a void function                 |
+| is_primitive | boolean            | Whether the function is returning a primitive data type |
+
+**parameter**
+
+| Name    | Type    | Description                     |
+|---------|---------|---------------------------------|
+| name    | string  | Name of the parameter           |
+| type    | string  | Type of the parameter           |
+| is_last | boolean | Whether it's the last parameter |
+
+### JSON Example
+
+``` json
+{
+    "use_header":    true,
+    "source":        "single_parameter.c",
+    "metadata_list": [
+        {
+            "name":         "simple",
+            "type":         "void",
+            "is_primitive": true,
+            "is_void":      true,
+            "parameters":   [
+                {
+                    "name":         "is_active",
+                    "type":         "bool",
+                    "is_last":      true
+                }
+            ]
+        }
+    ]
+}
+```
+
+For custom template example, you can refer to custom [template](/tests/suites/template) used in this project test suite.
