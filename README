@@ -15,13 +15,13 @@ Install required dependencies:
 
 Download the latest package release from the release page:
 
-https://github.com/alvinmatias69/cgentest/releases
+- https://github.com/alvinmatias69/cgentest/releases
 
 Extract and compile cgentest
 
 ``` sh
-$ tar -xf cgentest-1.0.0.tar.gz
-$ cd cgentest-1.0.0
+$ tar -xf cgentest-x.x.x.tar.gz
+$ cd cgentest-x.x.x
 $ ./configure
 $ make
 $ make install # might require superuser role
