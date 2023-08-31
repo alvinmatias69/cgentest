@@ -102,18 +102,19 @@ struct arguments parse_args(int argc, char *argv[]) {
   return args;
 }
 
-// TODO: free remaining args
 void free_args(struct arguments *args) {
   if (strnlen(args->input, MAX_INPUT_LENGTH) > 0)
     free(args->input);
-  if (strnlen(args->target, MAX_INPUT_LENGTH) > 0)
+  if (args->custom_target)
     free(args->target);
-  if (strnlen(args->only, MAX_INPUT_LENGTH) > 0)
+  if (args->has_only)
     free(args->only);
-  if (strnlen(args->exclude, MAX_INPUT_LENGTH) > 0)
+  if (args->has_exclude)
     free(args->exclude);
   if (strnlen(args->template_file, MAX_INPUT_LENGTH) > 0)
     free(args->template_file);
+  if (args->has_custom_ctags_bin)
+    free(args->ctags_bin_path);
 }
 
 void print_args(struct arguments *args) {
